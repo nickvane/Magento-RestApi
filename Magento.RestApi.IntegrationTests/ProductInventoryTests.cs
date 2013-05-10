@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Magento.RestApi.Models;
 using NUnit.Framework;
 
@@ -18,10 +17,9 @@ namespace Magento.RestApi.IntegrationTests
 
             // Act
             var response = Client.UpdateStockQuantityForProduct(productId, quantity).Result;
-            Thread.Sleep(1000);
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
             Assert.AreEqual(quantity, updatedProduct.Result.stock_data.qty);
         }
@@ -35,10 +33,9 @@ namespace Magento.RestApi.IntegrationTests
 
             // Act
             var response = Client.UpdateStockQuantityForProduct(productId, quantity).Result;
-            Thread.Sleep(1000);
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
             Assert.AreEqual(quantity, updatedProduct.Result.stock_data.qty);
         }
@@ -59,10 +56,9 @@ namespace Magento.RestApi.IntegrationTests
 
             // Act
             var response = Client.UpdateStockItemForProduct(productId, stockItem).Result;
-            Thread.Sleep(1000);
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
             Assert.AreEqual(quantity, updatedProduct.Result.stock_data.qty);
             Assert.AreEqual(isInStock, updatedProduct.Result.stock_data.is_in_stock);
@@ -121,10 +117,9 @@ namespace Magento.RestApi.IntegrationTests
             stockItem.use_config_qty_increments = use_config_qty_increments;
 
             var response = Client.UpdateStockItemForProduct(productId, stockItem).Result;
-            Thread.Sleep(1000);
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
             var updatedStockitem = Client.GetStockItemForProduct(productId).Result.Result;
             Assert.AreEqual(backorders, updatedStockitem.backorders);
             Assert.AreEqual(enable_qty_increments, updatedStockitem.enable_qty_increments);

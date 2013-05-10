@@ -68,6 +68,7 @@
     <Compile Include="IMagentoApi.cs" />
     <Compile Include="Json\BaseConverter.cs" />
     <Compile Include="Json\BoolConverter.cs" />
+    <Compile Include="Json\Base64Converter.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="Json\ImageInfoConverter.cs" />
     <Compile Include="Json\StockItemConverter.cs" />

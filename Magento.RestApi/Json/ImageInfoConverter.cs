@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Magento.RestApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,16 +17,6 @@ namespace Magento.RestApi.Json
             WriteProperty(imageInfo, p => p.exclude, false, writer, serializer);
             WriteProperty(imageInfo, p => p.position, false, writer, serializer);
             WriteProperty(imageInfo, p => p.label, false, writer, serializer);
-            WriteProperty(imageInfo, p => p.file_mime_type, true, writer, serializer);
-            WriteProperty(imageInfo, p => p.file_name, true, writer, serializer);
-
-            WriteProperty(imageInfo, p => p.file_content, true, writer, serializer);
-
-            if (imageInfo.file_content != null && imageInfo.HasChanged(i => i.file_content))
-            {
-                writer.WritePropertyName("types");
-                serializer.Serialize(writer, Convert.ToBase64String(imageInfo.GetValue(i => i.file_content), 0, imageInfo.file_content.Length));
-            }
 
             if (imageInfo.types != null && imageInfo.HasChanged(i => i.types))
             {
@@ -35,7 +24,7 @@ namespace Magento.RestApi.Json
                 writer.WriteStartArray();
                 foreach (var type in imageInfo.GetValue(i => i.types))
                 {
-                    serializer.Serialize(writer, (int)type);
+                    serializer.Serialize(writer, type.ToString());
                 }
                 writer.WriteEndArray();
             }

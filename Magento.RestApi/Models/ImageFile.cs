@@ -1,5 +1,7 @@
 ﻿using System;
 using Magento.RestApi.Core;
+using Magento.RestApi.Json;
+using Newtonsoft.Json;
 
 namespace Magento.RestApi.Models
 {
@@ -16,8 +18,9 @@ namespace Magento.RestApi.Models
         }
 
         /// <summary>
-        /// Image file content (base_64 encoded).
+        /// Image file content.
         /// </summary>
+        [JsonConverter(typeof(Base64Converter))]
         public byte[] file_content
         {
             get { return GetValue(x => x.file_content); }
@@ -26,6 +29,7 @@ namespace Magento.RestApi.Models
 
         /// <summary>
         /// Image file name.
+        /// If the file_name parameter is not defined, the original file name is set for the image. The first created image will be called "image", the second created image will be called "image_2", etc.
         /// </summary>
         public string file_name
         {

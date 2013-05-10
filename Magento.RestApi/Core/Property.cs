@@ -29,7 +29,8 @@ namespace Magento.RestApi.Core
             }
             else if (typeof(T).GetInterfaces().Any(x =>
                                                    x.IsGenericType &&
-                                                   x.GetGenericTypeDefinition() == typeof(IList<>)))
+                                                   x.GetGenericTypeDefinition() == typeof(IList<>)) &&
+                !typeof(T).IsAssignableFrom(typeof(byte[])))
             {
                 var genericType = typeof (T).GetGenericArguments()[0];
                 var initialValue = _initialValue as IList;

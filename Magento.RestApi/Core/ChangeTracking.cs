@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
 
 namespace Magento.RestApi.Core
 {
@@ -11,6 +12,7 @@ namespace Magento.RestApi.Core
         private readonly Dictionary<string, IProperty> _properties = new Dictionary<string, IProperty>();
         private bool _hasStartedTracking;
 
+        [JsonIgnore]
         public bool HasStartedTracking
         {
             get { return _hasStartedTracking; }

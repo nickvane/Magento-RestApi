@@ -19,7 +19,7 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductById(1).Result;
 
             // Assert
-            Assert.IsNotNull(response.Result);
+            Assert.IsNotNull(response.Result, response.ErrorString);
             Assert.IsFalse(response.HasErrors);
             Assert.AreEqual(_validSku, response.Result.sku);
         }
@@ -33,7 +33,7 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductById(0).Result;
 
             // Assert
-            Assert.IsNull(response.Result);
+            Assert.IsNull(response.Result, response.ErrorString);
             Assert.IsTrue(response.HasErrors);
             Assert.AreEqual("404", response.Errors.First().Code);
         }
@@ -47,7 +47,7 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductBySku(_validSku).Result;
 
             // Assert
-            Assert.IsNotNull(response.Result);
+            Assert.IsNotNull(response.Result, response.ErrorString);
             Assert.IsFalse(response.HasErrors);
             Assert.AreEqual(1, response.Result.entity_id);
         }
@@ -62,7 +62,7 @@ namespace Magento.RestApi.IntegrationTests
 
             // Assert
             Assert.IsNull(response.Result);
-            Assert.IsFalse(response.HasErrors);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
         }
 
         [Test]
@@ -96,8 +96,8 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.SaveNewProduct(product).Result;
 
             // Assert
-            Assert.IsTrue(response.Result);
-            Assert.IsFalse(response.HasErrors);
+            Assert.Less(0, response.Result);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
             var newProduct = Client.GetProductBySku(sku).Result;
             Assert.IsNotNull(newProduct.Result);
             Assert.AreEqual(12.5, newProduct.Result.price);
@@ -115,7 +115,7 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UpdateProduct(product).Result;
             
             // Assert
-            Assert.IsFalse(response.HasErrors);
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
             Assert.IsTrue(response.Result);
             var updatedProduct = Client.GetProductBySku(_validSku).Result.Result;
             Assert.AreEqual(0, updatedProduct.price);

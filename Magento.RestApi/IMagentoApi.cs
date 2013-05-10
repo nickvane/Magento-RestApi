@@ -83,7 +83,7 @@ namespace Magento.RestApi
         /// Saves the product as new product. Throws exception if product already exists.
         /// </summary>
         /// <param name="product"></param>
-        Task<MagentoApiResponse<bool>> SaveNewProduct(Product product);
+        Task<MagentoApiResponse<int>> SaveNewProduct(Product product);
         /// <summary>
         /// Updates an existing product. Throws exception if product doesn't exist.
         /// </summary>
@@ -193,15 +193,7 @@ namespace Magento.RestApi
         /// <param name="productId"></param>
         /// <param name="image"></param>
         /// <returns></returns>
-        Task<MagentoApiResponse<bool>> AssignImageToProduct(int productId, ImageFile image);
-        /// <summary>
-        /// Allows you to add an image for the required product with image settings for a specific store.
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="storeId"></param>
-        /// <param name="image"></param>
-        /// <returns></returns>
-        Task<MagentoApiResponse<bool>> AssignImageToProductForStore(int productId, int storeId, ImageFile image);
+        Task<MagentoApiResponse<int>> AddImageToProduct(int productId, ImageFile image);
         /// <summary>
         /// Allows you to remove the specified image from a product.
         /// The image will not be deleted physically, the image parameters will be set to No Image.
@@ -209,7 +201,7 @@ namespace Magento.RestApi
         /// <param name="productId"></param>
         /// <param name="imageId"></param>
         /// <returns></returns>
-        Task<MagentoApiResponse<bool>> UnAssignImageFromProduct(int productId, int imageId);
+        Task<MagentoApiResponse<bool>> UnassignImageFromProduct(int productId, int imageId);
         /// <summary>
         /// Allows you to remove an image from the required product in the specified store.
         /// The image will not be deleted physically, the image parameters will be set to No Image for the current store.

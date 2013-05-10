@@ -31,7 +31,7 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// The Sort Order option. The order in which the images are displayed in the MORE VIEWS section.
         /// </summary>
-        public int position
+        public int? position
         {
             get { return GetValue(x => x.position); }
             set { SetValue(x => x.position, value); }
@@ -40,28 +40,10 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// Defines whether the image will associate only to one of the three image types.
         /// </summary>
-        public int exclude
+        public int? exclude
         {
             get { return GetValue(x => x.exclude); }
             set { SetValue(x => x.exclude, value); }
-        }
-
-        /// <summary>
-        /// Image file content (base_64 encoded).
-        /// </summary>
-        public byte[] file_content
-        {
-            get { return GetValue(x => x.file_content); }
-            set { SetValue(x => x.file_content, value); }
-        }
-
-        /// <summary>
-        /// Image file name.
-        /// </summary>
-        public string file_name
-        {
-            get { return GetValue(x => x.file_name); }
-            set { SetValue(x => x.file_name, value); }
         }
 
         /// <summary>
@@ -71,15 +53,6 @@ namespace Magento.RestApi.Models
         {
             get { return GetValue(x => x.url); }
             set { SetValue(x => x.url, value); }
-        }
-
-        /// <summary>
-        /// File mime type. Can have the following values: image/jpeg, image/png, etc.
-        /// </summary>
-        public string file_mime_type
-        {
-            get { return GetValue(x => x.file_mime_type); }
-            set { SetValue(x => x.file_mime_type, value); }
         }
 
         /// <summary>

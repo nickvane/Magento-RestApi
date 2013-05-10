@@ -441,6 +441,8 @@ namespace Magento.RestApi
 
         #region API products
 
+        #region products
+
         public async Task<MagentoApiResponse<IList<Product>>> GetProducts(Filter filter)
         {
             var request = CreateRequest("/api/rest/products");
@@ -513,7 +515,7 @@ namespace Magento.RestApi
             return response;
         }
 
-        public async Task<MagentoApiResponse<bool>> SaveNewProduct(Product product)
+        public async Task<MagentoApiResponse<int>> SaveNewProduct(Product product)
         {
             if (product.entity_id != 0) throw new MagentoApiException("A new product can't have an entity_id.");
 
@@ -521,7 +523,19 @@ namespace Magento.RestApi
             request.AddBody(product);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            int productId = 0;
+            var location = response.Headers.FirstOrDefault(h => h.Name.Equals("Location"));
+            if (location != null)
+            {
+                int.TryParse(location.Value.ToString().Split('/').Last(), out productId);
+            }
+            return new MagentoApiResponse<int>
+                       {
+                           Result = productId,
+                           RequestUrl = Client.BuildUri(response.Request),
+                           Errors = GetErrorsFromResponse(response),
+                           ErrorString = response.Content
+                       };
         }
 
         public async Task<MagentoApiResponse<bool>> UpdateProduct(Product product)
@@ -563,6 +577,8 @@ namespace Magento.RestApi
             var response = await Execute(request);
             return CreateMagentoResponse(response);
         }
+
+        #endregion
 
         #region websites
 
@@ -655,7 +671,13 @@ namespace Magento.RestApi
             request.AddBody(new { category_id = categoryId });
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            var magentoResponse = CreateMagentoResponse(response);
+            // if the response contains the error that the product is already assigned, then ignore it and remove the errors.
+            if (magentoResponse.Errors != null && magentoResponse.Errors.Count(e => e.Message.Contains("Product #" + productId + " is already assigned to category #" + categoryId)) > 0)
+            {
+                magentoResponse.Errors = new List<MagentoError>();
+            }
+            return magentoResponse;
         }
 
         public async Task<MagentoApiResponse<bool>> UnAssignCategoryFromProduct(int productId, int categoryId)
@@ -665,7 +687,13 @@ namespace Magento.RestApi
             request.AddParameter("categoryId", categoryId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            var magentoResponse = CreateMagentoResponse(response);
+            // if the response contains the error that the product is already assigned, then ignore it and remove the errors.
+            if (magentoResponse.Errors != null && magentoResponse.Errors.Count(e => e.Message.Contains("Product #" + productId + " isn't assigned to category #" + categoryId)) > 0)
+            {
+                magentoResponse.Errors = new List<MagentoError>();
+            }
+            return magentoResponse;
         }
 
         #endregion
@@ -679,7 +707,7 @@ namespace Magento.RestApi
             
             var response = await Execute<List<ImageInfo>>(request);
             return !response.HasErrors 
-                ? new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Result = response.Result }
+                ? new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Result = response.Result ?? new List<ImageInfo>() }
                 : new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
@@ -691,7 +719,7 @@ namespace Magento.RestApi
 
             var response = await Execute<List<ImageInfo>>(request);
             return !response.HasErrors
-                ? new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Result = response.Result }
+                ? new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Result = response.Result ?? new List<ImageInfo>() }
                 : new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
@@ -717,7 +745,7 @@ namespace Magento.RestApi
         public async Task<MagentoApiResponse<bool>> UpdateImageInfoForProduct(int productId, int imageId, ImageInfo imageInfo)
         {
             if (imageInfo == null) throw new ArgumentNullException("imageInfo");
-            if (!imageInfo.HasChanged())
+            if (imageInfo.HasChanged())
             {
                 var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}", Method.PUT);
                 request.AddParameter("productId", productId, ParameterType.UrlSegment);
@@ -733,7 +761,7 @@ namespace Magento.RestApi
         public async Task<MagentoApiResponse<bool>> UpdateImageInfoForProductForStore(int productId, int storeId, int imageId, ImageInfo imageInfo)
         {
             if (imageInfo == null) throw new ArgumentNullException("imageInfo");
-            if (!imageInfo.HasChanged())
+            if (imageInfo.HasChanged())
             {
                 var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}/store/{storeId}", Method.PUT);
                 request.AddParameter("productId", productId, ParameterType.UrlSegment);
@@ -747,38 +775,33 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
-        public async Task<MagentoApiResponse<bool>> AssignImageToProduct(int productId, ImageFile image)
+        public async Task<MagentoApiResponse<int>> AddImageToProduct(int productId, ImageFile image)
         {
             if (image == null) throw new ArgumentNullException("image");
-            if (!image.HasChanged())
+            if (image.HasChanged())
             {
                 var request = CreateRequest("/api/rest/products/{productId}/images", Method.POST);
                 request.AddParameter("productId", productId, ParameterType.UrlSegment);
                 request.AddBody(image);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                var location = response.Headers.FirstOrDefault(h => h.Name.Equals("Location"));
+                if (location != null)
+                {
+                    int.TryParse(location.Value.ToString().Split('/').Last(), out productId);
+                }
+                return new MagentoApiResponse<int>
+                {
+                    Result = productId,
+                    RequestUrl = Client.BuildUri(response.Request),
+                    Errors = GetErrorsFromResponse(response),
+                    ErrorString = response.Content
+                };
             }
-            return new MagentoApiResponse<bool> { Result = true };
+            return new MagentoApiResponse<int> { Result = 0 };
         }
 
-        public async Task<MagentoApiResponse<bool>> AssignImageToProductForStore(int productId, int storeId, ImageFile image)
-        {
-            if (image == null) throw new ArgumentNullException("image");
-            if (!image.HasChanged())
-            {
-                var request = CreateRequest("/api/rest/products/{productId}/images/store/{storeId}", Method.POST);
-                request.AddParameter("productId", productId, ParameterType.UrlSegment);
-                request.AddParameter("storeId", storeId, ParameterType.UrlSegment);
-                request.AddBody(image);
-
-                var response = await Execute(request);
-                return CreateMagentoResponse(response);
-            }
-            return new MagentoApiResponse<bool> { Result = true };
-        }
-
-        public async Task<MagentoApiResponse<bool>> UnAssignImageFromProduct(int productId, int imageId)
+        public async Task<MagentoApiResponse<bool>> UnassignImageFromProduct(int productId, int imageId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}", Method.DELETE);
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
