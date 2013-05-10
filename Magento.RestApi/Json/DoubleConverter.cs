@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Newtonsoft.Json;
 
 namespace Magento.RestApi.Json
@@ -17,7 +18,7 @@ namespace Magento.RestApi.Json
         {
             var value = reader.Value == null ? string.Empty : reader.Value.ToString();
             double result;
-            if (double.TryParse(value, out result))
+            if (double.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.CreateSpecificCulture("en-US"), out result))
             {
                 return result;
             }

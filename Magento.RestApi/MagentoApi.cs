@@ -80,6 +80,14 @@ namespace Magento.RestApi
         {
             _accessTokenKey = accessTokenKey;
             _accessTokenSecret = accessTokenSecret;
+
+            InitializeRestClient();
+            _client.Authenticator = OAuth1Authenticator.ForProtectedResource(
+                _consumerKey,
+                _consumerSecret,
+                _accessTokenKey,
+                _accessTokenSecret);
+
             return this;
         }
 

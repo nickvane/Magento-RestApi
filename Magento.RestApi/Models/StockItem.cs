@@ -125,6 +125,7 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// Maximum number of items in the shopping cart to be sold
         /// </summary>
+        [JsonConverter(typeof(DoubleConverter))]
         public double? max_sale_qty
         {
             get { return GetValue(x => x.max_sale_qty); }
@@ -152,7 +153,8 @@ namespace Magento.RestApi.Models
         }
 
         /// <summary>
-        /// Date when the number of stock items became lower than the number defined in the Notify for Quantity Below option
+        /// Date when the number of stock items became lower than the number defined in the Notify for Quantity Below option.
+        /// This is a readonly field, it can't be updated in Magento.
         /// </summary>
         public DateTime? low_stock_date
         {

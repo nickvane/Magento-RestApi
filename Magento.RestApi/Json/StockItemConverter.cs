@@ -12,6 +12,7 @@ namespace Magento.RestApi.Json
 
             writer.WriteStartObject();
 
+            WriteProperty(stockItem, p => p.qty, true, writer, serializer);
             WriteProperty(stockItem, p => p.item_id, false, writer, serializer);
             WriteProperty(stockItem, p => p.product_id, false, writer, serializer);
             WriteProperty(stockItem, p => p.stock_id, false, writer, serializer);
@@ -25,7 +26,6 @@ namespace Magento.RestApi.Json
             WriteProperty(stockItem, p => p.min_qty, false, writer, serializer);
             WriteProperty(stockItem, p => p.min_sale_qty, false, writer, serializer);
             WriteProperty(stockItem, p => p.notify_stock_qty, false, writer, serializer);
-            WriteProperty(stockItem, p => p.qty, false, writer, serializer);
             WriteProperty(stockItem, p => p.qty_increments, false, writer, serializer);
             WriteProperty(stockItem, p => p.use_config_backorders, false, writer, serializer);
             WriteProperty(stockItem, p => p.use_config_enable_qty_inc, false, writer, serializer);
