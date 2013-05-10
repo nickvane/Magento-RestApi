@@ -7,7 +7,7 @@ The client is specifically targeted to be used in background processes. Magento 
 ### Usage
 #### Authentication
 
-For the following code to work, **the user must be an admin to use the client.** 
+For the following code to work, **the user must be an admin.** 
 
 ```csharp
 var client = new MagentoApi()

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Magento.RestApi")]
-[assembly: AssemblyDescription("A .net client for admin access to the Magento REST API")]
+[assembly: AssemblyDescription("An async C# Magento REST API client")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Magento.RestApi")]
