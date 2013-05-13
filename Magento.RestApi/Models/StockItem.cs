@@ -11,6 +11,9 @@ namespace Magento.RestApi.Models
     [JsonConverter(typeof(StockItemConverter))]
     public class StockItem : ChangeTracking<StockItem>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public StockItem()
         {
             StartTracking();
@@ -156,6 +159,7 @@ namespace Magento.RestApi.Models
         /// Date when the number of stock items became lower than the number defined in the Notify for Quantity Below option.
         /// This is a readonly field, it can't be updated in Magento.
         /// </summary>
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime? low_stock_date
         {
             get { return GetValue(x => x.low_stock_date); }

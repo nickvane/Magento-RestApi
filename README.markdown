@@ -55,6 +55,22 @@ if (!response.HasErrors)
 * Keeps track of changed properties so only changed values are updated
 * If oauth token is rejected after some time, the client re-authenticates and executes the failed request again.
 
-Not all Magento REST API features are currently implemented.
+Following Magento REST API features are currently implemented:
+
+* Inventory
+* Products
+	* Product Categories
+	* Product Images
+	* Product Websites
+
 For the supported features and usage of the library take a look at the integration tests.
+
+Todo features:
+
+* Orders
+	* Order Addresses
+	* Order Comments
+	* Order Items
+* Customers
+* Customer Addresses 
 

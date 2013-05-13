@@ -36,6 +36,7 @@ namespace Magento.RestApi.Json
             WriteProperty(stockItem, p => p.use_config_notify_stock_qty, false, writer, serializer);
             WriteProperty(stockItem, p => p.use_config_qty_increments, false, writer, serializer);
             WriteProperty(stockItem, p => p.stock_status_changed_auto, false, writer, serializer);
+            WriteProperty(stockItem, p => p.low_stock_date, false, writer, serializer);
             
             writer.WriteEndObject();
         }

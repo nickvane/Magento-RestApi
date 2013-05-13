@@ -3,19 +3,19 @@
     /// <summary>
     /// 
     /// </summary>
-    public enum BackOrderStatus
+    public enum ManufacturerPriceEnablement
     {
         /// <summary>
         /// 
         /// </summary>
-        NoBackorders = 0,
+        No = 0,
         /// <summary>
         /// 
         /// </summary>
-        AllowQtyBelow0 = 1,
+        Yes = 1,
         /// <summary>
         /// 
         /// </summary>
-        AllowQtyBelow0AndNotifyCustomer = 2
+        UseConfig = 2
     }
 }

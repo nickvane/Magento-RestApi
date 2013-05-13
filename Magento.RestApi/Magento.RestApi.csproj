@@ -69,6 +69,7 @@
     <Compile Include="Json\BaseConverter.cs" />
     <Compile Include="Json\BoolConverter.cs" />
     <Compile Include="Json\Base64Converter.cs" />
+    <Compile Include="Json\DateTimeConverter.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="Json\ImageInfoConverter.cs" />
     <Compile Include="Json\StockItemConverter.cs" />
@@ -89,13 +90,14 @@
     <Compile Include="Models\ImageFile.cs" />
     <Compile Include="Models\ImageInfo.cs" />
     <Compile Include="Models\ImageType.cs" />
+    <Compile Include="Models\ManufacturerPriceEnablement.cs" />
+    <Compile Include="Models\PriceTypeDisplay.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductStatus.cs" />
     <Compile Include="Models\ProductVisibility.cs" />
     <Compile Include="Models\StockData.cs" />
     <Compile Include="Models\StockItem.cs" />
     <Compile Include="Models\TierPrice.cs" />
-    <Compile Include="Models\Website.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     [JsonConverter(typeof(GroupPriceConverter))]
     public class GroupPrice : ChangeTracking<GroupPrice>
@@ -18,7 +21,7 @@ namespace Magento.RestApi.Models
         /// Website ID
         /// </summary>
         /// <remarks>optional</remarks>
-        public string website_id
+        public int? website_id
         {
             get { return GetValue(x => x.website_id); }
             set { SetValue(x => x.website_id, value); }
@@ -27,7 +30,7 @@ namespace Magento.RestApi.Models
         /// Customer group
         /// </summary>
         /// <remarks>optional</remarks>
-        public string cust_group
+        public int? cust_group
         {
             get { return GetValue(x => x.cust_group); }
             set { SetValue(x => x.cust_group, value); }

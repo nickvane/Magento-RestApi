@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Magento.RestApi.Models;
@@ -27,7 +28,7 @@ namespace Magento.RestApi.IntegrationTests
                 visibility = ProductVisibility.CatalogSearch,
                 status = ProductStatus.Enabled,
                 name = "DIY Guitar Pick Punch",
-                weight = "10",
+                weight = 10,
                 tax_class_id = 2,
                 type_id = "simple",
                 attribute_set_id = 4 // default
@@ -111,7 +112,6 @@ namespace Magento.RestApi.IntegrationTests
             var images = Client.GetImagesForProduct(productId).Result;
             var imageCount = images.Result == null ? 0 : images.Result.Count;
             var imagesForStore = Client.GetImagesForProductForStore(productId, storeId1).Result;
-            var imageForStoreCount = imagesForStore.Result == null ? 0 : imagesForStore.Result.Count;
             var filePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Images\\100001\\") + "04.jpg";
             var imageFile = new ImageFile
             {
@@ -140,6 +140,97 @@ namespace Magento.RestApi.IntegrationTests
             Assert.AreEqual(3, imageInfo2.types.Count);
             var imageInfo3 = Client.GetImageInfoForProductForStore(productId, storeId1, imageId).Result.Result;
             Assert.AreEqual(0, imageInfo3.types.Count);
+        }
+
+        [Test]
+        public void GetAndUpdateImageInfoForProduct()
+        {
+            // Arrange
+            var product = Client.GetProductBySku("100000").Result.Result;
+            var images = Client.GetImagesForProduct(product.entity_id).Result.Result;
+            
+            // Act
+            var response1 = Client.GetImageInfoForProduct(product.entity_id, images.First().id).Result;
+            var imageInfo = response1.Result;
+            imageInfo.label = Guid.NewGuid().ToString();
+            var response2 = Client.UpdateImageInfoForProduct(product.entity_id, imageInfo.id, imageInfo).Result;
+
+            // Assert
+            Assert.IsFalse(response1.HasErrors, response1.ErrorString);
+            Assert.IsFalse(response2.HasErrors, response2.ErrorString);
+            var response3 = Client.GetImageInfoForProduct(product.entity_id, images.First().id).Result;
+            Assert.IsFalse(response3.HasErrors, response3.ErrorString);
+            Assert.AreEqual(imageInfo.label, response3.Result.label);
+        }
+
+        [Test]
+        public void GetAndUpdateImageInfoForProductForStore()
+        {
+            // Arrange
+            var filePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Images\\100001\\") + "02.jpg";
+            var imageFile = new ImageFile
+            {
+                file_content = File.ReadAllBytes(filePath),
+                file_mime_type = "image/jpeg",
+                file_name = "100001_02"
+            };
+            var response = Client.AddImageToProduct(productId, imageFile).Result;
+            var imageId = response.Result;
+            var response1 = Client.GetImageInfoForProduct(productId, imageId).Result;
+            var imageInfo = response1.Result;
+            var websiteLabel = "Label1";
+            imageInfo.label = websiteLabel;
+            imageInfo.types = new List<ImageType>
+                                  {
+                                      ImageType.image,
+                                      ImageType.small_image,
+                                      ImageType.thumbnail
+                                  };
+            imageInfo.position = 10;
+            var response2 = Client.UpdateImageInfoForProduct(productId, imageId, imageInfo).Result;
+
+            // Act
+            imageInfo = new ImageInfo();
+            var store2Label = "Label2";
+            imageInfo.label = store2Label;
+            imageInfo.position = 11;
+            imageInfo.types = new List<ImageType>
+                                  {
+                                      ImageType.image
+                                  };
+            var response3 = Client.UpdateImageInfoForProductForStore(productId, 2, imageId, imageInfo).Result;
+            imageInfo = new ImageInfo();
+            var store3Label = "Label3";
+            imageInfo.label = store3Label;
+            imageInfo.position = 12;
+            imageInfo.exclude = true;
+            var response4 = Client.UpdateImageInfoForProductForStore(productId, 3, imageId, imageInfo).Result;
+            var response5 = Client.GetImageInfoForProductForStore(productId, 2, imageId).Result;
+            var response6 = Client.GetImageInfoForProductForStore(productId, 3, imageId).Result;
+            var response7 = Client.GetImageInfoForProduct(productId, imageId).Result;
+
+            // Assert
+            Assert.IsFalse(response3.HasErrors, response1.ErrorString);
+            Assert.IsFalse(response4.HasErrors, response2.ErrorString);
+            Assert.IsFalse(response5.HasErrors, response1.ErrorString);
+            Assert.IsFalse(response6.HasErrors, response2.ErrorString);
+            Assert.IsFalse(response7.HasErrors, response2.ErrorString);
+
+            Assert.AreEqual(websiteLabel, response7.Result.label);
+            Assert.AreEqual(store2Label, response5.Result.label);
+            Assert.AreEqual(store3Label, response6.Result.label);
+
+            Assert.AreEqual(3, response7.Result.types.Count);
+            Assert.AreEqual(1, response5.Result.types.Count);
+            Assert.AreEqual(3, response6.Result.types.Count);
+
+            Assert.AreEqual(10, response7.Result.position);
+            Assert.AreEqual(11, response5.Result.position);
+            Assert.AreEqual(12, response6.Result.position);
+
+            Assert.IsFalse(response7.Result.exclude.Value);
+            Assert.IsFalse(response5.Result.exclude.Value);
+            Assert.IsTrue(response6.Result.exclude.Value);
         }
     }
 }

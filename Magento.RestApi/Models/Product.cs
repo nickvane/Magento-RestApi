@@ -13,11 +13,18 @@ namespace Magento.RestApi.Models
     [Serializable]
     public class Product : ChangeTracking<Product>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public Product()
         {
             StartTracking();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override bool HasChanged()
         {
             var hasChanged = base.HasChanged();
@@ -144,7 +151,7 @@ namespace Magento.RestApi.Models
             set { SetValue(x => x.options_container, value); }
         }
         /// <summary>
-        /// Product country of manufacture
+        /// Product country of manufacture. This is the 2 letter ISO code of the country.
         /// </summary>
         /// <remarks>optional</remarks>
         public string country_of_manufacture
@@ -156,7 +163,7 @@ namespace Magento.RestApi.Models
         /// The Apply MAP option. Defines whether the price in the catalog in the frontend is substituted with a Click for price link
         /// </summary>
         /// <remarks>optional</remarks>
-        public int? msrp_enabled
+        public ManufacturerPriceEnablement? msrp_enabled
         {
             get { return GetValue(x => x.msrp_enabled); }
             set { SetValue(x => x.msrp_enabled, value); }
@@ -165,7 +172,7 @@ namespace Magento.RestApi.Models
         /// Defines how the price will be displayed in the frontend. Can have the following values: In Cart, Before Order Confirmation, and On Gesture
         /// </summary>
         /// <remarks>optional</remarks>
-        public int? msrp_display_actual_price_type
+        public PriceTypeDisplay? msrp_display_actual_price_type
         {
             get { return GetValue(x => x.msrp_display_actual_price_type); }
             set { SetValue(x => x.msrp_display_actual_price_type, value); }
@@ -174,7 +181,8 @@ namespace Magento.RestApi.Models
         /// Defines whether the gift message is available for the product
         /// </summary>
         /// <remarks>optional</remarks>
-        public int? gift_message_available
+        [JsonConverter(typeof(BoolConverter))]
+        public bool? gift_message_available
         {
             get { return GetValue(x => x.gift_message_available); }
             set { SetValue(x => x.gift_message_available, value); }
@@ -183,6 +191,7 @@ namespace Magento.RestApi.Models
         /// Product price
         /// </summary>
         /// <remarks>required</remarks>
+        [JsonConverter(typeof(DoubleConverter))]
         public double price
         {
             get { return GetValue(x => x.price); }
@@ -192,6 +201,7 @@ namespace Magento.RestApi.Models
         /// Product special price
         /// </summary>
         /// <remarks>optional</remarks>
+        [JsonConverter(typeof(DoubleConverter))]
         public double? special_price
         {
             get { return GetValue(x => x.special_price); }
@@ -201,7 +211,8 @@ namespace Magento.RestApi.Models
         /// Product weight
         /// </summary>
         /// <remarks>required</remarks>
-        public string weight
+        [JsonConverter(typeof(DoubleConverter))]
+        public double weight
         {
             get { return GetValue(x => x.weight); }
             set { SetValue(x => x.weight, value); }
@@ -210,6 +221,7 @@ namespace Magento.RestApi.Models
         /// The Manufacturer's Suggested Retail Price option. The price that a manufacturer suggests to sell the product at
         /// </summary>
         /// <remarks>optional</remarks>
+        [JsonConverter(typeof(DoubleConverter))]
         public double? msrp
         {
             get { return GetValue(x => x.msrp); }
@@ -294,7 +306,8 @@ namespace Magento.RestApi.Models
         /// Date starting from which the special price will be applied to the product
         /// </summary>
         /// <remarks>optional</remarks>
-        public string special_from_date
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime special_from_date
         {
             get { return GetValue(x => x.special_from_date); }
             set { SetValue(x => x.special_from_date, value); }
@@ -303,7 +316,8 @@ namespace Magento.RestApi.Models
         /// Date till which the special price will be applied to the product
         /// </summary>
         /// <remarks>optional</remarks>
-        public string special_to_date
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime special_to_date
         {
             get { return GetValue(x => x.special_to_date); }
             set { SetValue(x => x.special_to_date, value); }
@@ -312,7 +326,8 @@ namespace Magento.RestApi.Models
         /// Date starting from which the product is promoted as a new product
         /// </summary>
         /// <remarks>optional</remarks>
-        public string news_from_date
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime news_from_date
         {
             get { return GetValue(x => x.news_from_date); }
             set { SetValue(x => x.news_from_date, value); }
@@ -321,7 +336,8 @@ namespace Magento.RestApi.Models
         /// Date till which the product is promoted as a new product
         /// </summary>
         /// <remarks>optional</remarks>
-        public string news_to_date
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime news_to_date
         {
             get { return GetValue(x => x.news_to_date); }
             set { SetValue(x => x.news_to_date, value); }
@@ -330,7 +346,8 @@ namespace Magento.RestApi.Models
         /// Date starting from which the custom design will be applied to the product page
         /// </summary>
         /// <remarks>optional</remarks>
-        public string custom_design_from
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime custom_design_from
         {
             get { return GetValue(x => x.custom_design_from); }
             set { SetValue(x => x.custom_design_from, value); }
@@ -339,7 +356,8 @@ namespace Magento.RestApi.Models
         /// Date till which the custom design will be applied to the product page
         /// </summary>
         /// <remarks>optional</remarks>
-        public string custom_design_to
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime custom_design_to
         {
             get { return GetValue(x => x.custom_design_to); }
             set { SetValue(x => x.custom_design_to, value); }

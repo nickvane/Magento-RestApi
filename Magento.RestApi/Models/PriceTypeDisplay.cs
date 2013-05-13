@@ -3,19 +3,23 @@
     /// <summary>
     /// 
     /// </summary>
-    public enum BackOrderStatus
+    public enum PriceTypeDisplay
     {
         /// <summary>
         /// 
         /// </summary>
-        NoBackorders = 0,
+        OnGesture = 1,
         /// <summary>
         /// 
         /// </summary>
-        AllowQtyBelow0 = 1,
+        InCart = 2, 
         /// <summary>
         /// 
         /// </summary>
-        AllowQtyBelow0AndNotifyCustomer = 2
+        BeforeOrderConfirmation = 3, 
+        /// <summary>
+        /// 
+        /// </summary>
+        UseConfig = 4
     }
 }

@@ -83,6 +83,7 @@ namespace Magento.RestApi
         /// Saves the product as new product. Throws exception if product already exists.
         /// </summary>
         /// <param name="product"></param>
+        /// <returns>The id of the newly created product.</returns>
         Task<MagentoApiResponse<int>> SaveNewProduct(Product product);
         /// <summary>
         /// Updates an existing product. Throws exception if product doesn't exist.
@@ -192,7 +193,7 @@ namespace Magento.RestApi
         /// </summary>
         /// <param name="productId"></param>
         /// <param name="image"></param>
-        /// <returns></returns>
+        /// <returns>The id of the newly created image.</returns>
         Task<MagentoApiResponse<int>> AddImageToProduct(int productId, ImageFile image);
         /// <summary>
         /// Allows you to remove the specified image from a product.

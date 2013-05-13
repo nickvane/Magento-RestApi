@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Json
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class GroupPriceConverter : BaseConverter<GroupPrice>
     {
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)

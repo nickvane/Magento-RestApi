@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Json
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TierPriceConverter : BaseConverter<TierPrice>
     {
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
@@ -13,6 +16,7 @@ namespace Magento.RestApi.Json
             WriteProperty(tierPrice, p => p.cust_group, true, writer, serializer);
             WriteProperty(tierPrice, p => p.price, true, writer, serializer);
             WriteProperty(tierPrice, p => p.website_id, true, writer, serializer);
+            WriteProperty(tierPrice, p => p.price_qty, true, writer, serializer);
             writer.WriteEndObject();
         }
 

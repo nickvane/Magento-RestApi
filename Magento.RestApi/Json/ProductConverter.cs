@@ -6,6 +6,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Magento.RestApi.Json
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ProductConverter : BaseConverter<Product>
     {
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)

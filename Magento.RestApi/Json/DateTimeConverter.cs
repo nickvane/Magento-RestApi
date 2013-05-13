@@ -7,31 +7,33 @@ namespace Magento.RestApi.Json
     /// <summary>
     /// 
     /// </summary>
-    public class DoubleConverter : JsonConverter
+    public class DateTimeConverter : JsonConverter
     {
+        private const string dateFormat = "yyyy-MM-dd HH:mm:ss";
+
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
             if (value != null)
             {
-                writer.WriteValue(((double)value).ToString(CultureInfo.GetCultureInfo("en-US")));
+                writer.WriteValue(((DateTime)value).ToUniversalTime().ToString(dateFormat));
             }
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             var value = reader.Value == null ? string.Empty : reader.Value.ToString();
-            double result;
-            if (double.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.GetCultureInfo("en-US"), out result))
+            DateTime result;
+            if (DateTime.TryParseExact(value, dateFormat, CultureInfo.CurrentCulture, DateTimeStyles.None, out result))
             {
-                return result;
+                return result.ToLocalTime();
             }
-            if (objectType == typeof(double?)) return null;
-            return 0;
+            if (objectType == typeof(DateTime?)) return null;
+            return new DateTime();
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(double) || objectType == typeof(double?);
+            return objectType == typeof(DateTime) || objectType == typeof(DateTime?);
         }
     }
 }

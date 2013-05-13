@@ -5,10 +5,16 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     [JsonConverter(typeof(StockDataConverter))]
     public class StockData : ChangeTracking<StockData>, IEquatable<StockData>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public StockData()
         {
             StartTracking();
@@ -56,7 +62,7 @@ namespace Magento.RestApi.Models
         /// Defines whether the customer can place the order for products that are out of stock at the moment.
         /// </summary>
         /// <remarks>optional</remarks>
-        public int? backorders
+        public BackOrderStatus? backorders
         {
             get { return GetValue(x => x.backorders); }
             set { SetValue(x => x.backorders, value); }

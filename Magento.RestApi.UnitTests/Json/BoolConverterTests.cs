@@ -31,9 +31,9 @@ namespace Magento.RestApi.UnitTests.Json
             // arrange
             var converter = new BoolConverter();
             var writer1 = new Moq.Mock<JsonWriter>();
-            writer1.Setup(x => x.WriteValue(0)).Verifiable();
+            writer1.Setup(x => x.WriteValue("0")).Verifiable();
             var writer2 = new Moq.Mock<JsonWriter>();
-            writer2.Setup(x => x.WriteValue(1)).Verifiable();
+            writer2.Setup(x => x.WriteValue("1")).Verifiable();
             var writer3 = new Moq.Mock<JsonWriter>();
 
             // act
@@ -44,7 +44,7 @@ namespace Magento.RestApi.UnitTests.Json
             // assert
             writer1.Verify();
             writer2.Verify();
-            writer3.Verify(x => x.WriteValue(It.IsAny<int>()), Times.Never());
+            writer3.Verify(x => x.WriteValue(It.IsAny<string>()), Times.Never());
         }
 
         [Test]

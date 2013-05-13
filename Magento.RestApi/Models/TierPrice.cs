@@ -5,10 +5,16 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     [JsonConverter(typeof(TierPriceConverter))]
     public class TierPrice : ChangeTracking<TierPrice>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public TierPrice()
         {
             StartTracking();
@@ -27,7 +33,7 @@ namespace Magento.RestApi.Models
         /// Customer group
         /// </summary>
         /// <remarks>optional</remarks>
-        public string cust_group
+        public int? cust_group
         {
             get { return GetValue(x => x.cust_group); }
             set { SetValue(x => x.cust_group, value); }
@@ -36,6 +42,7 @@ namespace Magento.RestApi.Models
         /// Tier price
         /// </summary>
         /// <remarks>optional</remarks>
+        [JsonConverter(typeof(DoubleConverter))]
         public double? price
         {
             get { return GetValue(x => x.price); }
@@ -45,6 +52,7 @@ namespace Magento.RestApi.Models
         /// Price quantity
         /// </summary>
         /// <remarks>optional</remarks>
+        [JsonConverter(typeof(DoubleConverter))]
         public double? price_qty
         {
             get { return GetValue(x => x.price_qty); }

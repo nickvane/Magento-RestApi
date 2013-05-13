@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     [JsonConverter(typeof(ImageInfoConverter))]
     public class ImageInfo : ChangeTracking<ImageInfo>
@@ -40,7 +43,8 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// Defines whether the image will associate only to one of the three image types.
         /// </summary>
-        public int? exclude
+        [JsonConverter(typeof(BoolConverter))]
+        public bool? exclude
         {
             get { return GetValue(x => x.exclude); }
             set { SetValue(x => x.exclude, value); }

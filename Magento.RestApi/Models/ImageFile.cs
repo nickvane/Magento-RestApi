@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class ImageFile : ChangeTracking<ImageFile>
     {

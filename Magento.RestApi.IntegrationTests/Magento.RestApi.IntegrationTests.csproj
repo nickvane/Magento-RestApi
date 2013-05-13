@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="AuthenticationTests.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ProductCategoryTests.cs" />
     <Compile Include="ProductImageTests.cs" />
     <Compile Include="ProductInventoryTests.cs" />

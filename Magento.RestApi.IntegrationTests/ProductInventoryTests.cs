@@ -97,7 +97,7 @@ namespace Magento.RestApi.IntegrationTests
             stockItem.notify_stock_qty = notify_stock_qty;
             var qty_increments = !stockItem.qty_increments.HasValue || stockItem.qty_increments == 0 ? 1 : 0;
             stockItem.qty_increments = qty_increments;
-            var stock_status_changed_auto = !stockItem.stock_status_changed_auto;
+            var stock_status_changed_auto = stockItem.stock_status_changed_auto.HasValue ? !stockItem.stock_status_changed_auto : true;
             stockItem.stock_status_changed_auto = stock_status_changed_auto;
             var use_config_backorders = !stockItem.use_config_backorders;
             stockItem.use_config_backorders = use_config_backorders;
