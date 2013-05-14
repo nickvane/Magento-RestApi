@@ -41,7 +41,7 @@ namespace Magento.RestApi.IntegrationTests
                 if (delete.HasErrors) throw new Exception(delete.Errors.First().Message);
             }
 
-            var response1 = Client.SaveNewProduct(product).Result;
+            var response1 = Client.CreateNewProduct(product).Result;
             var response2 = Client.GetProductBySku(sku).Result;
             productId = response2.Result.entity_id;
             var response3 = Client.AssignWebsiteToProduct(productId, websiteId).Result;

@@ -69,6 +69,7 @@
     <Compile Include="Json\BaseConverter.cs" />
     <Compile Include="Json\BoolConverter.cs" />
     <Compile Include="Json\Base64Converter.cs" />
+    <Compile Include="Json\CustomerConverter.cs" />
     <Compile Include="Json\DateTimeConverter.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="Json\ImageInfoConverter.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="MagentoApiResponse.cs" />
     <Compile Include="MagentoError.cs" />
     <Compile Include="Models\BackOrderStatus.cs" />
+    <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Filter.cs" />
     <Compile Include="Models\FilterExpression.cs" />
     <Compile Include="Models\GroupPrice.cs" />

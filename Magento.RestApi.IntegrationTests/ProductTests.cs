@@ -94,7 +94,7 @@ namespace Magento.RestApi.IntegrationTests
             }
             
             // Act
-            var response = Client.SaveNewProduct(product).Result;
+            var response = Client.CreateNewProduct(product).Result;
 
             // Assert
             Assert.IsFalse(response.HasErrors, response.ErrorString);
@@ -228,7 +228,7 @@ namespace Magento.RestApi.IntegrationTests
             }
 
             // act
-            var response1 = Client.SaveNewProduct(product).Result;
+            var response1 = Client.CreateNewProduct(product).Result;
 
             // assert
             Assert.IsFalse(response1.HasErrors, response1.ErrorString);

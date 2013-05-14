@@ -4,6 +4,9 @@ using Magento.RestApi.Models;
 
 namespace Magento.RestApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IMagentoApi
     {
         #region fluent configuration
@@ -46,18 +49,22 @@ namespace Magento.RestApi
         /// </summary>
         /// <returns></returns>
         Task<MagentoApiResponse<IList<Product>>> GetProducts(Filter filter);
+
         /// <summary>
         /// Allows you to retrieve the list of products of a specified category. These products will be returned in the product position ascending order.
         /// </summary>
         /// <param name="categoryId"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        Task<MagentoApiResponse<IList<Product>>> GetProductsByCategoryId(int categoryId);
+        Task<MagentoApiResponse<IList<Product>>> GetProductsByCategoryId(int categoryId, Filter filter = null);
+
         /// <summary>
         /// Get a product by id.
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<Product>> GetProductById(int productId);
+
         /// <summary>
         /// 
         /// </summary>
@@ -65,6 +72,7 @@ namespace Magento.RestApi
         /// <param name="storeId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<Product>> GetProductByIdForStore(int productId, int storeId);
+
         /// <summary>
         /// Get a product by sku.
         /// </summary>
@@ -72,6 +80,7 @@ namespace Magento.RestApi
         /// <returns></returns>
         /// <exception cref="Magento.RestApi.MagentoApiException">If more than 1 product is returned for sku.</exception>
         Task<MagentoApiResponse<Product>> GetProductBySku(string sku);
+
         /// <summary>
         /// 
         /// </summary>
@@ -79,79 +88,95 @@ namespace Magento.RestApi
         /// <param name="storeId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<Product>> GetProductBySkuForStore(string sku, int storeId);
+
         /// <summary>
         /// Saves the product as new product. Throws exception if product already exists.
         /// </summary>
         /// <param name="product"></param>
         /// <returns>The id of the newly created product.</returns>
-        Task<MagentoApiResponse<int>> SaveNewProduct(Product product);
+        Task<MagentoApiResponse<int>> CreateNewProduct(Product product);
+
         /// <summary>
         /// Updates an existing product. Throws exception if product doesn't exist.
         /// </summary>
         /// <param name="product"></param>
         Task<MagentoApiResponse<bool>> UpdateProduct(Product product);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="product"></param>
         /// <param name="storeId"></param>
         Task<MagentoApiResponse<bool>> UpdateProductForStore(Product product, int storeId);
+
         /// <summary>
         /// Deletes a product.
         /// </summary>
         /// <param name="productId"></param>
         Task<MagentoApiResponse<bool>> DeleteProduct(int productId);
+
         /// <summary>
         /// Allows you to retrieve information about websites assigned to a product
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<IList<int>>> GetWebsitesForProduct(int productId);
+
         /// <summary>
         /// Allows you to assign a website to a specified product.
         /// </summary>
         /// <param name="productId"></param>
         /// <param name="websiteId"></param>
         Task<MagentoApiResponse<bool>> AssignWebsiteToProduct(int productId, int websiteId);
+
         /// <summary>
         /// Allows you to unassign a website from a specified product.
         /// </summary>
         /// <param name="productId"></param>
         /// <param name="websiteId"></param>
         Task<MagentoApiResponse<bool>> UnassignWebsiteFromProduct(int productId, int websiteId);
+
         /// <summary>
         /// Allows you to retrieve information about assigned categories.
         /// </summary>
         /// <param name="productId"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        Task<MagentoApiResponse<IList<int>>> GetCategoriesForProduct(int productId);
+        Task<MagentoApiResponse<IList<int>>> GetCategoriesForProduct(int productId, Filter filter = null);
+
         /// <summary>
         /// Allows you to assign a category to a product.
         /// </summary>
         /// <param name="productId"></param>
         /// <param name="categoryId"></param>
         Task<MagentoApiResponse<bool>> AssignCategoryToProduct(int productId, int categoryId);
+
         /// <summary>
         /// Allows you to unassign a category from a product.
         /// </summary>
         /// <param name="productId"></param>
         /// <param name="categoryId"></param>
         Task<MagentoApiResponse<bool>> UnAssignCategoryFromProduct(int productId, int categoryId);
+
         /// <summary>
         /// Allows you to retrieve information about all images of a specified product. 
         /// If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
         /// </summary>
         /// <param name="productId"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProduct(int productId);
+        Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProduct(int productId, Filter filter = null);
+
         /// <summary>
         /// Allows you to retrieve information about product images for a specified store view.
         /// Images can have different labels for different stores. For example, image label "flower" in the English store view can be set as "fleur" in the French store view. If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
         /// </summary>
         /// <param name="productId"></param>
         /// <param name="storeId"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProductForStore(int productId, int storeId);
+        Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProductForStore(int productId, int storeId, Filter filter = null);
+
         /// <summary>
         /// Allows you to retrieve information about a specified product image.
         /// If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
@@ -160,6 +185,7 @@ namespace Magento.RestApi
         /// <param name="imageId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<ImageInfo>> GetImageInfoForProduct(int productId, int imageId);
+
         /// <summary>
         /// Allows you to retrieve information about the specified product image from a specified store.
         /// If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
@@ -169,6 +195,7 @@ namespace Magento.RestApi
         /// <param name="imageId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<ImageInfo>> GetImageInfoForProductForStore(int productId, int storeId, int imageId);
+
         /// <summary>
         /// Allows you to update information for the specified product image.
         /// When updating information, you need to pass only those parameters that you want to be updated. Parameters that were not passed in the request will preserve the previous values.
@@ -178,6 +205,7 @@ namespace Magento.RestApi
         /// <param name="imageInfo"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> UpdateImageInfoForProduct(int productId, int imageId, ImageInfo imageInfo);
+
         /// <summary>
         /// Allows you to update the specified product image information for s specified store.
         /// When updating information, you need to pass only those parameters that you want to be updated. Parameters that were not passed in the request, will preserve the previous values.
@@ -188,6 +216,7 @@ namespace Magento.RestApi
         /// <param name="imageInfo"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> UpdateImageInfoForProductForStore(int productId, int storeId, int imageId, ImageInfo imageInfo);
+
         /// <summary>
         /// Allows you to add an image for the required product.
         /// </summary>
@@ -195,6 +224,7 @@ namespace Magento.RestApi
         /// <param name="image"></param>
         /// <returns>The id of the newly created image.</returns>
         Task<MagentoApiResponse<int>> AddImageToProduct(int productId, ImageFile image);
+
         /// <summary>
         /// Allows you to remove the specified image from a product.
         /// The image will not be deleted physically, the image parameters will be set to No Image.
@@ -203,6 +233,7 @@ namespace Magento.RestApi
         /// <param name="imageId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> UnassignImageFromProduct(int productId, int imageId);
+
         /// <summary>
         /// Allows you to remove an image from the required product in the specified store.
         /// The image will not be deleted physically, the image parameters will be set to No Image for the current store.
@@ -212,6 +243,7 @@ namespace Magento.RestApi
         /// <param name="imageId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> UnAssignImageFromProductForStore(int productId, int storeId, int imageId);
+
         /// <summary>
         /// Allows you to retrieve the stock item information.
         /// The list of attributes that will be returned for stock items is configured in the Magento Admin Panel.
@@ -219,6 +251,7 @@ namespace Magento.RestApi
         /// <param name="productId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<StockItem>> GetStockItemForProduct(int productId);
+
         /// <summary>
         /// Allows you to update existing stock item data.
         /// </summary>
@@ -226,6 +259,7 @@ namespace Magento.RestApi
         /// <param name="stockItem"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> UpdateStockItemForProduct(int productId, StockItem stockItem);
+
         /// <summary>
         /// Allows you to update the quantity of the stock for a product.
         /// </summary>
@@ -233,5 +267,43 @@ namespace Magento.RestApi
         /// <param name="quantity"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> UpdateStockQuantityForProduct(int productId, double quantity);
+
+        /// <summary>
+        /// Allows you to retrieve the list of existing customers.
+        /// Only Admin user can retrieve the list of customers with all their attributes.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<IList<Customer>>> GetCustomers(Filter filter);
+
+        /// <summary>
+        /// Allows you to create a new customer.
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<int>> CreateNewCustomer(Customer customer);
+
+        /// <summary>
+        /// Allows you to retrieve information on an existing customer.
+        /// The list of attributes that will be returned for customers is configured in the Magento Admin Panel. The Customer user type has access only to his/her own information. Also, Admin can add additional non-system customer attributes by selecting Customers > Attributes > Manage Customer Attributes. If these attributes are set as visible on frontend, they will be returned in the response. Also, custom attributes will be returned in the response only after the customer information is updated in the Magento Admin Panel or the specified custom attribute is updated via API (see the PUT method below). Please note that managing customer attributes is available only in Magento Enterprise Edition.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<Customer>> GetCustomerById(int customerId);
+
+        /// <summary>
+        /// Allows you to update an existing customer.
+        /// The list of attributes that will be updated for customer is configured in the Magento Admin Panel. The Customer user type has access only to his/her own information.
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<bool>> UpdateCustomer(Customer customer);
+
+        /// <summary>
+        /// Allows you to delete an existing customer.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<bool>> DeleteCustomer(int customerId);
     }
 }

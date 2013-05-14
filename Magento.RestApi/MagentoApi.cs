@@ -456,7 +456,7 @@ namespace Magento.RestApi
             return new MagentoApiResponse<IList<Product>>{ Errors = response.Errors, RequestUrl = response.RequestUrl };
         }
 
-        public async Task<MagentoApiResponse<IList<Product>>> GetProductsByCategoryId(int categoryId)
+        public async Task<MagentoApiResponse<IList<Product>>> GetProductsByCategoryId(int categoryId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products");
             request.AddParameter("category_id", categoryId);
@@ -514,7 +514,7 @@ namespace Magento.RestApi
             return response;
         }
 
-        public async Task<MagentoApiResponse<int>> SaveNewProduct(Product product)
+        public async Task<MagentoApiResponse<int>> CreateNewProduct(Product product)
         {
             if (product.entity_id != 0) throw new MagentoApiException("A new product can't have an entity_id.");
 
@@ -640,7 +640,7 @@ namespace Magento.RestApi
 
         #region categories
 
-        public async Task<MagentoApiResponse<IList<int>>> GetCategoriesForProduct(int productId)
+        public async Task<MagentoApiResponse<IList<int>>> GetCategoriesForProduct(int productId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products/{productId}/categories");
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
@@ -699,7 +699,7 @@ namespace Magento.RestApi
 
         #region images
 
-        public async Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProduct(int productId)
+        public async Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProduct(int productId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images");
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
@@ -710,7 +710,7 @@ namespace Magento.RestApi
                 : new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
-        public async Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProductForStore(int productId, int storeId)
+        public async Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProductForStore(int productId, int storeId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/store/{storeId}");
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
@@ -872,6 +872,79 @@ namespace Magento.RestApi
                 return CreateMagentoResponse(response);
             }
             return new MagentoApiResponse<bool> { Errors = serverStockItem.Errors, ErrorString = serverStockItem.ErrorString, RequestUrl = serverStockItem.RequestUrl };
+        }
+
+        #endregion
+
+        #region Customers
+
+        public async Task<MagentoApiResponse<IList<Customer>>> GetCustomers(Filter filter)
+        {
+            var request = CreateRequest("/api/rest/customers");
+            AddFilterToRequest(filter, request);
+
+            var response = await Execute<Dictionary<int, Customer>>(request);
+            if (!response.HasErrors)
+            {
+                if (response.Result == null) response.Result = new Dictionary<int, Customer>();
+                return new MagentoApiResponse<IList<Customer>> { Result = response.Result.Select(customer => customer.Value).ToList(), RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
+            }
+            return new MagentoApiResponse<IList<Customer>> { Errors = response.Errors, RequestUrl = response.RequestUrl };
+        }
+
+        public async Task<MagentoApiResponse<int>> CreateNewCustomer(Customer customer)
+        {
+            if (customer.entity_id != 0) throw new MagentoApiException("A new customer can't have an entity_id.");
+
+            var request = CreateRequest("/api/rest/customers", Method.POST);
+            request.AddBody(customer);
+
+            var response = await Execute(request);
+            int productId = 0;
+            var location = response.Headers.FirstOrDefault(h => h.Name.Equals("Location"));
+            if (location != null)
+            {
+                int.TryParse(location.Value.ToString().Split('/').Last(), out productId);
+            }
+            return new MagentoApiResponse<int>
+            {
+                Result = productId,
+                RequestUrl = Client.BuildUri(response.Request),
+                Errors = GetErrorsFromResponse(response),
+                ErrorString = response.Content
+            };
+        }
+
+        public async Task<MagentoApiResponse<Customer>> GetCustomerById(int customerId)
+        {
+            var request = CreateRequest("/api/rest/customers/{customerId}");
+            request.AddParameter("customerId", customerId, ParameterType.UrlSegment);
+
+            return await Execute<Customer>(request);
+        }
+
+        public async Task<MagentoApiResponse<bool>> UpdateCustomer(Customer customer)
+        {
+            if (customer == null) throw new ArgumentNullException("customer");
+            if (customer.HasChanged())
+            {
+                var request = CreateRequest("/api/rest/customers/{customerId}", Method.PUT);
+                request.AddParameter("customerId", customer.entity_id, ParameterType.UrlSegment);
+                request.AddBody(customer);
+
+                var response = await Execute(request);
+                return CreateMagentoResponse(response);
+            }
+            return new MagentoApiResponse<bool> { Result = true };
+        }
+
+        public async Task<MagentoApiResponse<bool>> DeleteCustomer(int customerId)
+        {
+            var request = CreateRequest("/api/rest/customers/{customerId}", Method.DELETE);
+            request.AddParameter("customerId", customerId, ParameterType.UrlSegment);
+
+            var response = await Execute(request);
+            return CreateMagentoResponse(response);
         }
 
         #endregion

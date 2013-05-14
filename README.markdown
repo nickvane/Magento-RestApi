@@ -62,6 +62,7 @@ Following Magento REST API features are currently implemented:
 	* Product Categories
 	* Product Images
 	* Product Websites
+* Customers
 
 For the supported features and usage of the library take a look at the integration tests.
 
@@ -71,6 +72,5 @@ Todo features:
 	* Order Addresses
 	* Order Comments
 	* Order Items
-* Customers
 * Customer Addresses 
 
