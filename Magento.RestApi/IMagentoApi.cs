@@ -305,5 +305,55 @@ namespace Magento.RestApi
         /// <param name="customerId"></param>
         /// <returns></returns>
         Task<MagentoApiResponse<bool>> DeleteCustomer(int customerId);
+
+        /// <summary>
+        /// Allows you to retrieve the list of existing customer addresses.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<IList<CustomerAddress>>> GetAddressesForCustomer(int customerId);
+
+        /// <summary>
+        /// Allows you to create a new address for the required customer.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<int>> CreateNewCustomerAddress(int customerId, CustomerAddress address);
+
+        /// <summary>
+        /// Allows you to retrieve an existing customer address.
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<CustomerAddress>> GetCustomerAddressById(int addressId);
+
+        /// <summary>
+        /// Allows you to update an existing customer address.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<bool>> UpdateCustomerAddress(CustomerAddress address);
+
+        /// <summary>
+        /// Allows you to delete an existing customer address.
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<bool>> DeleteCustomerAddress(int addressId);
+
+        /// <summary>
+        ///  Allows you to retrieve the list of existing orders. Each order contains the following information: general order information, information on ordered items, order comments, and order addresses (both billing and shipping).
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<IList<Order>>> GetOrders(Filter filter);
+
+        /// <summary>
+        /// Allows you to retrieve information on a single order.
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        Task<MagentoApiResponse<Order>> GetOrderById(int orderId);
     }
 }

@@ -887,9 +887,9 @@ namespace Magento.RestApi
             if (!response.HasErrors)
             {
                 if (response.Result == null) response.Result = new Dictionary<int, Customer>();
-                return new MagentoApiResponse<IList<Customer>> { Result = response.Result.Select(customer => customer.Value).ToList(), RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
+                return new MagentoApiResponse<IList<Customer>> { Result = response.Result.Select(customer => customer.Value).ToList(), RequestUrl = response.RequestUrl };
             }
-            return new MagentoApiResponse<IList<Customer>> { Errors = response.Errors, RequestUrl = response.RequestUrl };
+            return new MagentoApiResponse<IList<Customer>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
         }
 
         public async Task<MagentoApiResponse<int>> CreateNewCustomer(Customer customer)
@@ -945,6 +945,101 @@ namespace Magento.RestApi
 
             var response = await Execute(request);
             return CreateMagentoResponse(response);
+        }
+
+        public async Task<MagentoApiResponse<IList<CustomerAddress>>> GetAddressesForCustomer(int customerId)
+        {
+            var request = CreateRequest("/api/rest/customers/{customerId}/addresses");
+            request.AddParameter("customerId", customerId, ParameterType.UrlSegment);
+
+            var response = await Execute<List<CustomerAddress>>(request);
+            if (!response.HasErrors)
+            {
+                if (response.Result == null) response.Result = new List<CustomerAddress>();
+                return new MagentoApiResponse<IList<CustomerAddress>> { Result = response.Result, RequestUrl = response.RequestUrl };
+            }
+            return new MagentoApiResponse<IList<CustomerAddress>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
+        }
+
+        public async Task<MagentoApiResponse<int>> CreateNewCustomerAddress(int customerId, CustomerAddress address)
+        {
+            if (address.entity_id != 0) throw new MagentoApiException("A new address can't have an entity_id.");
+
+            var request = CreateRequest("/api/rest/customers/{customerId}/addresses", Method.POST);
+            request.AddBody(address);
+
+            var response = await Execute(request);
+            int productId = 0;
+            var location = response.Headers.FirstOrDefault(h => h.Name.Equals("Location"));
+            if (location != null)
+            {
+                int.TryParse(location.Value.ToString().Split('/').Last(), out productId);
+            }
+            return new MagentoApiResponse<int>
+            {
+                Result = productId,
+                RequestUrl = Client.BuildUri(response.Request),
+                Errors = GetErrorsFromResponse(response),
+                ErrorString = response.Content
+            };
+        }
+
+        public async Task<MagentoApiResponse<CustomerAddress>> GetCustomerAddressById(int addressId)
+        {
+            var request = CreateRequest("/api/rest/customers/addresses/{addressId}");
+            request.AddParameter("addressId", addressId, ParameterType.UrlSegment);
+
+            return await Execute<CustomerAddress>(request);
+        }
+
+        public async Task<MagentoApiResponse<bool>> UpdateCustomerAddress(CustomerAddress address)
+        {
+            if (address == null) throw new ArgumentNullException("address");
+            if (address.HasChanged())
+            {
+                var request = CreateRequest("/api/rest/customers/addresses/{addressId}", Method.PUT);
+                request.AddParameter("addressId", address.entity_id, ParameterType.UrlSegment);
+                request.AddBody(address);
+
+                var response = await Execute(request);
+                return CreateMagentoResponse(response);
+            }
+            return new MagentoApiResponse<bool> { Result = true };
+        }
+
+        public async Task<MagentoApiResponse<bool>> DeleteCustomerAddress(int addressId)
+        {
+            var request = CreateRequest("/api/rest/customers/addresses/{addressId}", Method.DELETE);
+            request.AddParameter("addressId", addressId, ParameterType.UrlSegment);
+
+            var response = await Execute(request);
+            return CreateMagentoResponse(response);
+        }
+
+        #endregion
+
+        #region orders
+
+        public async Task<MagentoApiResponse<IList<Order>>> GetOrders(Filter filter)
+        {
+            var request = CreateRequest("/api/rest/orders");
+            AddFilterToRequest(filter, request);
+
+            var response = await Execute<List<Order>>(request);
+            if (!response.HasErrors)
+            {
+                if (response.Result == null) response.Result = new List<Order>();
+                return new MagentoApiResponse<IList<Order>> { Result = response.Result, RequestUrl = response.RequestUrl };
+            }
+            return new MagentoApiResponse<IList<Order>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
+        }
+
+        public async Task<MagentoApiResponse<Order>> GetOrderById(int orderId)
+        {
+            var request = CreateRequest("/api/rest/orders/{orderId}");
+            request.AddParameter("orderId", orderId, ParameterType.UrlSegment);
+
+            return await Execute<Order>(request);
         }
 
         #endregion
