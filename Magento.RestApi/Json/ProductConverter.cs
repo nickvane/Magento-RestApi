@@ -55,11 +55,8 @@ namespace Magento.RestApi.Json
             WriteProperty(product, p => p.special_price, false, writer, serializer);
             WriteProperty(product, p => p.special_to_date, false, writer, serializer);
             WriteProperty(product, p => p.url_key, false, writer, serializer);
-
-            if (product.stock_data != null && product.stock_data.HasChanged())
-            {
-                WriteProperty(product, p => p.stock_data, false, writer, serializer);
-            }
+            // even if stock_data hasn't changed, the empty property needs to be written or some use_config values are set to true
+            WriteProperty(product, p => p.stock_data, false, writer, serializer);
 
             var groupPrice = product.GetProperty(p => p.group_price);
             if (product.group_price != null && groupPrice.HasChanged())

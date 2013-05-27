@@ -51,7 +51,7 @@ namespace Magento.RestApi.Core
                         {
                             if (genericType.GetInterfaces().Any(x =>
                                                    x.IsGenericType &&
-                                                   x.GetGenericTypeDefinition() == typeof(IChangeTracking)))
+                                                   x.GetGenericTypeDefinition() == typeof(IChangeTracking<>)))
                             {
                                 hasChanged = value.Cast<object>().Aggregate(hasChanged, (current, item) => current | (item as IChangeTracking).HasChanged());
                             }

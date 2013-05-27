@@ -140,7 +140,7 @@ namespace Magento.RestApi.IntegrationTests
         public void CanCreateAndUpdateFullProduct()
         {
             // Arrange
-            var sku = "200001";
+            var sku = "200002";
             // create product with minimal required fields
             var product = new Product
             {
@@ -187,28 +187,28 @@ namespace Magento.RestApi.IntegrationTests
                                               }
                                       };
             product.stock_data = new StockData
-                                     {
-                                         backorders = BackOrderStatus.AllowQtyBelow0,
-                                         enable_qty_increments = false,
-                                         is_decimal_divided = false,
-                                         is_in_stock = true,
-                                         is_qty_decimal = false,
-                                         manage_stock = true,
-                                         max_sale_qty = 10,
-                                         min_qty = 2,
-                                         min_sale_qty = 1,
-                                         notify_stock_qty = 5,
-                                         qty = 20,
-                                         qty_increments = 1,
-                                         use_config_backorders = false,
-                                         use_config_enable_qty_inc = false,
-                                         use_config_manage_stock = false,
-                                         use_config_max_sale_qty = false,
-                                         use_config_min_qty = false,
-                                         use_config_min_sale_qty = false,
-                                         use_config_notify_stock_qty = false,
-                                         use_config_qty_increments = false
-                                     };
+            {
+                backorders = BackOrderStatus.AllowQtyBelow0,
+                enable_qty_increments = false,
+                is_decimal_divided = false,
+                is_in_stock = true,
+                is_qty_decimal = false,
+                manage_stock = true,
+                max_sale_qty = 10,
+                min_qty = 2,
+                min_sale_qty = 1,
+                notify_stock_qty = 5,
+                qty = 20,
+                qty_increments = 1,
+                use_config_backorders = false,
+                use_config_enable_qty_inc = false,
+                use_config_manage_stock = false,
+                use_config_max_sale_qty = false,
+                use_config_min_qty = false,
+                use_config_min_sale_qty = false,
+                use_config_notify_stock_qty = false,
+                use_config_qty_increments = false
+            };
             product.tier_price = new List<TierPrice>
                                      {
                                          new TierPrice
@@ -220,6 +220,7 @@ namespace Magento.RestApi.IntegrationTests
                                              }
                                            
                                      };
+
             var existingProduct = Client.GetProductBySku(sku).Result;
             if (existingProduct.Result != null)
             {
@@ -229,12 +230,16 @@ namespace Magento.RestApi.IntegrationTests
 
             // act
             var response1 = Client.CreateNewProduct(product).Result;
+            var productUpdate = Client.GetProductById(response1.Result).Result.Result;
+            productUpdate.name += "2";
+            var response2 = Client.UpdateProduct(productUpdate).Result;
+            var updatedProduct = Client.GetProductById(response1.Result).Result.Result;
 
             // assert
             Assert.IsFalse(response1.HasErrors, response1.ErrorString);
             Assert.Less(1, response1.Result);
+            Assert.IsFalse(response2.HasErrors, response1.ErrorString);
 
-            var updatedProduct = Client.GetProductById(response1.Result).Result.Result;
             Assert.AreEqual(product.attribute_set_id, updatedProduct.attribute_set_id);
             Assert.AreEqual(product.country_of_manufacture, updatedProduct.country_of_manufacture);
             Assert.AreEqual(product.custom_design, updatedProduct.custom_design);
@@ -250,7 +255,7 @@ namespace Magento.RestApi.IntegrationTests
             Assert.AreEqual(product.msrp, updatedProduct.msrp);
             Assert.AreEqual(product.msrp_display_actual_price_type, updatedProduct.msrp_display_actual_price_type);
             Assert.AreEqual(product.msrp_enabled, updatedProduct.msrp_enabled);
-            Assert.AreEqual(product.name, updatedProduct.name);
+            Assert.AreEqual(product.name + "2", updatedProduct.name);
             Assert.AreEqual(product.news_from_date, updatedProduct.news_from_date);
             Assert.AreEqual(product.news_to_date, updatedProduct.news_to_date);
             Assert.AreEqual(product.options_container, updatedProduct.options_container);

@@ -21,6 +21,26 @@ namespace Magento.RestApi.Models
             StartTracking();
         }
 
+        public override void StartTracking()
+        {
+            base.StartTracking();
+            if (group_price != null)
+            {
+                foreach (var groupPrice in group_price)
+                {
+                    groupPrice.StartTracking();
+                }
+            }
+            if (tier_price != null)
+            {
+                foreach (var tierPrice in tier_price)
+                {
+                    tierPrice.StartTracking();
+                }
+            }
+            if (stock_data != null) stock_data.StartTracking();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -307,7 +327,7 @@ namespace Magento.RestApi.Models
         /// </summary>
         /// <remarks>optional</remarks>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime special_from_date
+        public DateTime? special_from_date
         {
             get { return GetValue(x => x.special_from_date); }
             set { SetValue(x => x.special_from_date, value); }
@@ -317,7 +337,7 @@ namespace Magento.RestApi.Models
         /// </summary>
         /// <remarks>optional</remarks>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime special_to_date
+        public DateTime? special_to_date
         {
             get { return GetValue(x => x.special_to_date); }
             set { SetValue(x => x.special_to_date, value); }
@@ -327,7 +347,7 @@ namespace Magento.RestApi.Models
         /// </summary>
         /// <remarks>optional</remarks>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime news_from_date
+        public DateTime? news_from_date
         {
             get { return GetValue(x => x.news_from_date); }
             set { SetValue(x => x.news_from_date, value); }
@@ -337,7 +357,7 @@ namespace Magento.RestApi.Models
         /// </summary>
         /// <remarks>optional</remarks>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime news_to_date
+        public DateTime? news_to_date
         {
             get { return GetValue(x => x.news_to_date); }
             set { SetValue(x => x.news_to_date, value); }
@@ -347,7 +367,7 @@ namespace Magento.RestApi.Models
         /// </summary>
         /// <remarks>optional</remarks>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime custom_design_from
+        public DateTime? custom_design_from
         {
             get { return GetValue(x => x.custom_design_from); }
             set { SetValue(x => x.custom_design_from, value); }
@@ -357,7 +377,7 @@ namespace Magento.RestApi.Models
         /// </summary>
         /// <remarks>optional</remarks>
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime custom_design_to
+        public DateTime? custom_design_to
         {
             get { return GetValue(x => x.custom_design_to); }
             set { SetValue(x => x.custom_design_to, value); }

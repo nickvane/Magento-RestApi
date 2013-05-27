@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Threading;
+using NUnit.Framework;
 
 namespace Magento.RestApi.IntegrationTests
 {
@@ -21,6 +23,7 @@ namespace Magento.RestApi.IntegrationTests
             // Act
             productForStore = Client.GetProductBySkuForStore(_validSku, 1).Result;
             var response = Client.AssignWebsiteToProduct(product.Result.entity_id, 1).Result;
+            Thread.Sleep(500);
             var newProductForStore = Client.GetProductBySkuForStore(_validSku, 1).Result;
 
             // Assert
@@ -35,6 +38,7 @@ namespace Magento.RestApi.IntegrationTests
         {
             // Arrange
             var product = Client.GetProductBySku(_validSku).Result;
+            if(product.Result == null) throw new Exception(product.ErrorString);
             
             // Act
             var response = Client.AssignWebsiteToProduct(product.Result.entity_id, 999).Result;

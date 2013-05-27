@@ -33,7 +33,7 @@ namespace Magento.RestApi.Core
             return false;
         }
 
-        public void StartTracking()
+        public virtual void StartTracking()
         {
             _hasStartedTracking = true;
             foreach (var property in _properties)
