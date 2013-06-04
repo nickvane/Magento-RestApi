@@ -7,7 +7,7 @@ The client is specifically targeted to be used in background processes. Magento 
 ### Usage
 #### Authentication
 
-For the following code to work, **the user must be an admin.** 
+For the following code to work, **the user must be an admin** and the REST user and roles have to be configured in Magento (see http://www.magentocommerce.com/api/rest/permission_settings/roles_configuration.html ). 
 
 ```csharp
 var client = new MagentoApi()
