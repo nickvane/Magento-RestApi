@@ -70,7 +70,6 @@ namespace Magento.RestApi
             _client.AddDefaultHeader("Accept", "application/json");
             _client.AddDefaultHeader("Content-type", "application/json");
             _client.AddHandler("application/json", _jsonSerializer);
-            _client.FollowRedirects = true;
         }
 
         #region Authentication
@@ -108,6 +107,8 @@ namespace Magento.RestApi
                     _userName = userName;
                     _password = password;
 
+                    InitializeRestClient();
+                    _client.FollowRedirects = true;
                     _client.Authenticator = OAuth1Authenticator.ForRequestToken(
                         _consumerKey,
                         _consumerSecret,
@@ -785,13 +786,14 @@ namespace Magento.RestApi
 
                 var response = await Execute(request);
                 var location = response.Headers.FirstOrDefault(h => h.Name.Equals("Location"));
+                var imageId = 0;
                 if (location != null)
                 {
-                    int.TryParse(location.Value.ToString().Split('/').Last(), out productId);
+                    int.TryParse(location.Value.ToString().Split('/').Last(), out imageId);
                 }
                 return new MagentoApiResponse<int>
                 {
-                    Result = productId,
+                    Result = imageId,
                     RequestUrl = Client.BuildUri(response.Request),
                     Errors = GetErrorsFromResponse(response),
                     ErrorString = response.Content
@@ -887,9 +889,9 @@ namespace Magento.RestApi
             if (!response.HasErrors)
             {
                 if (response.Result == null) response.Result = new Dictionary<int, Customer>();
-                return new MagentoApiResponse<IList<Customer>> { Result = response.Result.Select(customer => customer.Value).ToList(), RequestUrl = response.RequestUrl };
+                return new MagentoApiResponse<IList<Customer>> { Result = response.Result.Select(customer => customer.Value).ToList(), RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
             }
-            return new MagentoApiResponse<IList<Customer>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
+            return new MagentoApiResponse<IList<Customer>> { Errors = response.Errors, RequestUrl = response.RequestUrl };
         }
 
         public async Task<MagentoApiResponse<int>> CreateNewCustomer(Customer customer)
@@ -945,8 +947,7 @@ namespace Magento.RestApi
 
             var response = await Execute(request);
             return CreateMagentoResponse(response);
-        }
-
+       } 
         public async Task<MagentoApiResponse<IList<CustomerAddress>>> GetAddressesForCustomer(int customerId)
         {
             var request = CreateRequest("/api/rest/customers/{customerId}/addresses");

@@ -79,6 +79,7 @@ namespace Magento.RestApi.Models
             get { return GetValue(x => x.entity_id); }
             set { SetValue(x => x.entity_id, value); }
         }
+
         /// <summary>
         /// Product type. Can have the "simple" value
         /// </summary>
