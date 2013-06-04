@@ -70,6 +70,7 @@ namespace Magento.RestApi
             _client.AddDefaultHeader("Accept", "application/json");
             _client.AddDefaultHeader("Content-type", "application/json");
             _client.AddHandler("application/json", _jsonSerializer);
+            _client.FollowRedirects = false;
         }
 
         #region Authentication
@@ -791,13 +792,22 @@ namespace Magento.RestApi
                 {
                     int.TryParse(location.Value.ToString().Split('/').Last(), out imageId);
                 }
-                return new MagentoApiResponse<int>
+                var magentoResponse = new MagentoApiResponse<int>
                 {
                     Result = imageId,
                     RequestUrl = Client.BuildUri(response.Request),
                     Errors = GetErrorsFromResponse(response),
                     ErrorString = response.Content
                 };
+                if (imageId == 0)
+                {
+                    magentoResponse.Errors.Add(new MagentoError
+                                                   {
+                                                       Code = response.StatusCode.ToString(),
+                                                       Message = "Could not get image id from location from header"
+                                                   });
+                }
+                return magentoResponse;
             }
             return new MagentoApiResponse<int> { Result = 0 };
         }
