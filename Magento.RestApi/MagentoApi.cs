@@ -70,7 +70,6 @@ namespace Magento.RestApi
             _client.AddDefaultHeader("Accept", "application/json");
             _client.AddDefaultHeader("Content-type", "application/json");
             _client.AddHandler("application/json", _jsonSerializer);
-            _client.FollowRedirects = false;
         }
 
         #region Authentication
@@ -109,7 +108,6 @@ namespace Magento.RestApi
                     _password = password;
 
                     InitializeRestClient();
-                    _client.FollowRedirects = true;
                     _client.Authenticator = OAuth1Authenticator.ForRequestToken(
                         _consumerKey,
                         _consumerSecret,
@@ -323,6 +321,7 @@ namespace Magento.RestApi
 
         private async Task<MagentoApiResponse<T>> Execute<T>(IRestRequest request, bool isSecondTry = false) where T : new()
         {
+            Client.FollowRedirects = request.Method != Method.POST;
             var response = await Client.GetResponseAsync<T>(request);
             return await HandleResponse(response, request, isSecondTry);
         }
@@ -353,6 +352,7 @@ namespace Magento.RestApi
 
         private async Task<IRestResponse> Execute(IRestRequest request, bool isSecondTry = false)
         {
+            Client.FollowRedirects = request.Method != Method.POST;
             var response = await Client.GetResponseAsync(request);
             return await HandleResponse(response, request, isSecondTry);
         }
