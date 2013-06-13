@@ -32,6 +32,8 @@ var client = new MagentoApi()
     .SetAccessToken("AccessTokenKey", "accessTokenSecret");
 ```
 
+*If you have trouble authenticating, you can read the wiki page [authentication steps](https://github.com/nickvane/Magento-RestApi/wiki/Authentication-steps) for more information about the different steps in the authentication process. You can then compare the steps from the page with your own requests you see in [Fiddler](http://fiddler2.com).*
+
 #### Client calls
 
 The client can then be used like this:
