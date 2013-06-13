@@ -248,8 +248,9 @@ namespace Magento.RestApi
             {
                 authorizePage.Load(responseStream);
             }
-            if(authorizePage.DocumentNode.InnerText.Contains("Invalid User Name or Password")) throw new MagentoApiException(string.Format("The provided admin username '{0}' or password is invalid. The user needs to be a Magento admin.", _userName));
-            var actionUrl = authorizePage.GetElementbyId("oauth_authorize_confirm").GetAttributeValue("action", string.Empty);
+            var formElement = authorizePage.GetElementbyId("oauth_authorize_confirm");
+            if(authorizePage.DocumentNode.InnerText.Contains("Invalid User Name or Password") || formElement == null) throw new MagentoApiException(string.Format("The provided admin username '{0}' or password is invalid. The user needs to be a Magento admin.", _userName));
+            var actionUrl = formElement.GetAttributeValue("action", string.Empty);
 
             // Submit the form by a get
             var getRequest = (HttpWebRequest) WebRequest.Create(actionUrl + "?oauth_token=" + oauthToken);
