@@ -69,6 +69,7 @@
     <Compile Include="Json\BaseConverter.cs" />
     <Compile Include="Json\BoolConverter.cs" />
     <Compile Include="Json\Base64Converter.cs" />
+    <Compile Include="Json\OrderConverter.cs" />
     <Compile Include="Json\CustomerAddressConverter.cs" />
     <Compile Include="Json\CustomerConverter.cs" />
     <Compile Include="Json\DateTimeConverter.cs" />
