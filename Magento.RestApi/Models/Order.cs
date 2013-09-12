@@ -195,7 +195,7 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// 
         /// </summary>
-        public List<OrderAddress> order_items
+        public List<OrderItem> order_items
         {
             get { return GetValue(x => x.order_items); }
             set { SetValue(x => x.order_items, value); }
