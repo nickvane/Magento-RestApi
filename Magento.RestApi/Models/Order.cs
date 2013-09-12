@@ -38,7 +38,7 @@ namespace Magento.RestApi.Models
         /// 
         /// </summary>
         [JsonConverter(typeof(DoubleConverter))]
-        public double base_discount_amount
+        public double? base_discount_amount
         {
             get { return GetValue(x => x.base_discount_amount); }
             set { SetValue(x => x.base_discount_amount, value); }
