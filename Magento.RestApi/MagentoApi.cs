@@ -1037,11 +1037,11 @@ namespace Magento.RestApi
             var request = CreateRequest("/api/rest/orders");
             AddFilterToRequest(filter, request);
 
-            var response = await Execute<List<Order>>(request);
+            var response = await Execute<Dictionary<int, Order>>(request);
             if (!response.HasErrors)
             {
-                if (response.Result == null) response.Result = new List<Order>();
-                return new MagentoApiResponse<IList<Order>> { Result = response.Result, RequestUrl = response.RequestUrl };
+                if (response.Result == null) response.Result = new Dictionary<int, Order>();
+                return new MagentoApiResponse<IList<Order>> { Result = response.Result.Select(order => order.Value).ToList(), RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
             }
             return new MagentoApiResponse<IList<Order>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
         }

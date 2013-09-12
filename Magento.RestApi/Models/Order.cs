@@ -187,6 +187,7 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// 
         /// </summary>
+        
         public List<OrderAddress> addresses
         {
             get { return GetValue(x => x.addresses); }
@@ -195,6 +196,7 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// 
         /// </summary>
+        
         public List<OrderItem> order_items
         {
             get { return GetValue(x => x.order_items); }
