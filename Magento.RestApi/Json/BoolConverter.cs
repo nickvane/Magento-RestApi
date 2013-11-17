@@ -11,10 +11,7 @@ namespace Magento.RestApi.Json
     {
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
-            if (value != null)
-            {
-                writer.WriteValue((((bool) value) ? 1 : 0).ToString(CultureInfo.InvariantCulture));
-            }
+            writer.WriteValue(value != null ? (((bool) value) ? 1 : 0).ToString(CultureInfo.InvariantCulture) : string.Empty);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)

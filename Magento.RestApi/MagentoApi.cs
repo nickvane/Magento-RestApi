@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Magento.RestApi.Models;
-using Magento.RestApi.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -78,7 +77,6 @@ namespace Magento.RestApi
         {
             _jsonSerializer = new JsonSerializer();
             _client = new RestClient(_url);
-            _client.AddDefaultHeader("Accept", "application/json");
             _client.AddDefaultHeader("Content-type", "application/json");
             _client.AddHandler("application/json", _jsonSerializer);
         }
@@ -335,15 +333,23 @@ namespace Magento.RestApi
         {
             Client.FollowRedirects = request.Method != Method.POST;
             var response = await Client.ExecuteTaskAsync(request);
+            // TODO: maybe also check for valid http status codes?
             if (response.ContentType.ToUpperInvariant() == "APPLICATION/JSON")
             {
                 var result = _jsonSerializer.Deserialize<T>(response);
-                return await HandleResponse(response, request, isSecondTry);
+                return await HandleResponse(response, result, request, isSecondTry);
             }
-            
+            var errors = new List<MagentoError>
+            {
+                new MagentoError
+                {
+                    Message = "The response doesn't contain json and cannot be deserialized: See ErrorString for the content of the response."
+                }
+            };
+            return new MagentoApiResponse<T> { Errors = errors, RequestUrl = Client.BuildUri(request), ErrorString = response.Content };
         }
 
-        private async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse<T> response, IRestRequest request, bool isSecondTry) where T : new()
+        private async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse response, T result, IRestRequest request, bool isSecondTry) where T : new()
         {
             if (response.ErrorException != null)
             {
@@ -364,7 +370,7 @@ namespace Magento.RestApi
                 return new MagentoApiResponse<T> { Errors = errors, RequestUrl = Client.BuildUri(request), ErrorString = response.Content };
             }
 
-            return new MagentoApiResponse<T> { Result = response.Data, RequestUrl = Client.BuildUri(request) };
+            return new MagentoApiResponse<T> { Result = result, RequestUrl = Client.BuildUri(request) };
         }
 
         private async Task<IRestResponse> Execute(IRestRequest request, bool isSecondTry = false)
@@ -457,7 +463,7 @@ namespace Magento.RestApi
 
         #endregion
 
-        #region API products
+        #region API
 
         #region products
 
@@ -510,7 +516,7 @@ namespace Magento.RestApi
         {
             var request = CreateRequest("/api/rest/products");
             request.AddParameter("filter[0][attribute]", "sku");
-            request.AddParameter("filter[0][in][0]", sku);
+            request.AddParameter("filter[0][in]", sku);
 
             var response = await Execute<Dictionary<int, Product>>(request);
             if (!response.HasErrors)
@@ -765,6 +771,10 @@ namespace Magento.RestApi
             if (imageInfo == null) throw new ArgumentNullException("imageInfo");
             if (imageInfo.HasChanged())
             {
+                if (imageInfo.HasChanged(i => i.file_content))
+                {
+                    throw new MagentoApiException("You are trying to update the content for an existing image. Although the Magento api specifications seems to allow this, the content won't be updated and Magento will not let you know it didn't work, hence this exception. If you need to update the content for an image you need to delete the existing image and add a new one. I know, ridiculous.");
+                }
                 var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}", Method.PUT);
                 request.AddParameter("productId", productId, ParameterType.UrlSegment);
                 request.AddParameter("imageId", imageId, ParameterType.UrlSegment);
@@ -781,6 +791,10 @@ namespace Magento.RestApi
             if (imageInfo == null) throw new ArgumentNullException("imageInfo");
             if (imageInfo.HasChanged())
             {
+                if (imageInfo.HasChanged(i => i.file_content))
+                {
+                    throw new MagentoApiException("You are trying to update the content for an existing image. Although the Magento api specifications seems to allow this, the content won't be updated and Magento will not let you know it didn't work, hence this exception. If you need to update the content for an image you need to delete the existing image and add a new one. I know, ridiculous.");
+                }
                 var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}/store/{storeId}", Method.PUT);
                 request.AddParameter("productId", productId, ParameterType.UrlSegment);
                 request.AddParameter("storeId", storeId, ParameterType.UrlSegment);

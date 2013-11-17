@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Magento.RestApi.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Magento.RestApi.Json
 {
@@ -54,8 +52,8 @@ namespace Magento.RestApi.Json
                 writer.WriteEndArray();
             }
 
-            var order_items = product.GetProperty(p => p.order_items);
-            if (order_items != null && order_items.HasChanged())
+            var orderItems = product.GetProperty(p => p.order_items);
+            if (orderItems != null && orderItems.HasChanged())
             {
                 writer.WritePropertyName("order_items");
                 writer.WriteStartArray();
@@ -68,40 +66,18 @@ namespace Magento.RestApi.Json
                 }
                 writer.WriteEndArray();
             }
-
-            // WriteProperty(product, p => p.addresses, false, writer, serializer);
-            // WriteProperty(product, p => p.order_items, false, writer, serializer);
-
+            
             writer.WriteEndObject();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
-            var Order = existingValue as Order ?? new Order();
-            //var jObject = JObject.Load(reader);
+            var order = existingValue as Order ?? new Order();
 
-            serializer.Populate(reader, Order);
-            /*Order.Attributes = new Dictionary<string, string>();
+            serializer.Populate(reader, order);
 
-            foreach (var item in jObject.Children())
-            {
-                var jProperty = item as JProperty;
-                if (jProperty != null)
-                {
-                    var name = jProperty.Name;
-                    var property = Order.GetType().GetProperty(name);
-                    if (property == null && name != "messages")
-                    {
-                        if (Order.Attributes.ContainsKey(name)) Order.Attributes.Remove(name);
-                        string value = null;
-                        if (jProperty.Value != null) value = jProperty.Value.Value<string>();
-                        Order.Attributes.Add(name, value);
-                    }
-                }
-            }*/
-
-            Order.StartTracking();
-            return Order;
+            order.StartTracking();
+            return order;
         }
 
         public override bool CanConvert(Type objectType)

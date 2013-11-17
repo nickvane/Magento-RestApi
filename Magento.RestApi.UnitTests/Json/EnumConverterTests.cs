@@ -35,6 +35,7 @@ namespace Magento.RestApi.UnitTests.Json
             var writer2 = new Moq.Mock<JsonWriter>();
             writer2.Setup(x => x.WriteValue(1)).Verifiable();
             var writer3 = new Moq.Mock<JsonWriter>();
+            writer3.Setup(x => x.WriteValue(string.Empty)).Verifiable();
 
             // act
             converter.WriteJson(writer1.Object, System.ConsoleColor.Black, null);
@@ -44,7 +45,7 @@ namespace Magento.RestApi.UnitTests.Json
             // assert
             writer1.Verify();
             writer2.Verify();
-            writer3.Verify(x => x.WriteValue(It.IsAny<int>()), Times.Never());
+            writer3.Verify();
         }
 
         [Test]

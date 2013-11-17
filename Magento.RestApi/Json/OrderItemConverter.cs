@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Magento.RestApi.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Magento.RestApi.Json
 {
@@ -34,12 +32,12 @@ namespace Magento.RestApi.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
-            var OrderItem = existingValue as OrderItem ?? new OrderItem();
+            var orderItem = existingValue as OrderItem ?? new OrderItem();
 
-            serializer.Populate(reader, OrderItem);
+            serializer.Populate(reader, orderItem);
 
-            OrderItem.StartTracking();
-            return OrderItem;
+            orderItem.StartTracking();
+            return orderItem;
         }
 
         public override bool CanConvert(Type objectType)

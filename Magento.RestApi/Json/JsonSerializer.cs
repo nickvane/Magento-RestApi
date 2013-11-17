@@ -17,7 +17,6 @@
 // Original JsonSerializer contributed by Daniel Crenna (@dimebrain)
 #endregion
 
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Deserializers;
@@ -54,9 +53,16 @@ namespace Magento.RestApi.Json
         /// <returns>JSON as String</returns>
         public string Serialize(object obj)
         {
-            return JsonConvert.SerializeObject(obj, _settings);
+            var result = JsonConvert.SerializeObject(obj, _settings);
+            return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T Deserialize<T>(IRestResponse response)
         {
             if (response == null) return default(T);

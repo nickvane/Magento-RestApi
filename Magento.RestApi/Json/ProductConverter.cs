@@ -45,7 +45,6 @@ namespace Magento.RestApi.Json
             WriteProperty(product, p => p.msrp, false, writer, serializer);
             WriteProperty(product, p => p.msrp_display_actual_price_type, false, writer, serializer);
             WriteProperty(product, p => p.msrp_enabled, false, writer, serializer);
-            WriteProperty(product, p => p.name, false, writer, serializer);
             WriteProperty(product, p => p.news_from_date, false, writer, serializer);
             WriteProperty(product, p => p.news_to_date, false, writer, serializer);
             WriteProperty(product, p => p.options_container, false, writer, serializer);

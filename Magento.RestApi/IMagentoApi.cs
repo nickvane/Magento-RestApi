@@ -343,7 +343,7 @@ namespace Magento.RestApi
         Task<MagentoApiResponse<bool>> DeleteCustomerAddress(int addressId);
 
         /// <summary>
-        ///  Allows you to retrieve the list of existing orders. Each order contains the following information: general order information, information on ordered items, order comments, and order addresses (both billing and shipping).
+        /// Allows you to retrieve the list of existing orders. Each order contains the following information: general order information, information on ordered items, order comments, and order addresses (both billing and shipping).
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>

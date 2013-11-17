@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magento.RestApi", "Magento.RestApi\Magento.RestApi.csproj", "{4B064292-5427-47F4-A444-D1AAC96E37FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D856637A-57FE-482C-BB00-6D4C904C3964}"

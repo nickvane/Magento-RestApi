@@ -147,5 +147,34 @@ namespace Magento.RestApi.IntegrationTests
             
             Assert.AreEqual(is_in_stock, updatedStockitem.is_in_stock);
         }
+
+        [Test]
+        public void WhenManagingStockShouldUpdate()
+        {
+            // Arrange
+            var product = Client.GetProductBySku("100000").Result;
+            var productId = product.Result.entity_id;
+            var stockItem = new StockItem
+            {
+                qty = 10,
+                min_qty = 15,
+                is_in_stock = false,
+                manage_stock = true
+            };
+            var response1 = Client.UpdateStockItemForProduct(productId, stockItem).Result;
+            var updatedStockItem = new StockItem
+                                       {
+                                           qty = 10,
+                                           is_in_stock = true
+                                       };
+
+            // Act
+            var response2 = Client.UpdateStockItemForProduct(productId, updatedStockItem).Result;
+            
+            // Assert
+            Assert.IsFalse(response2.HasErrors, response2.ErrorString);
+            var updatedProduct = Client.GetProductById(productId).Result;
+            Assert.IsTrue(updatedProduct.Result.stock_data.is_in_stock.Value);
+        }
     }
 }

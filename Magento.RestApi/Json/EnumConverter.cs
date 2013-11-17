@@ -3,13 +3,20 @@ using Newtonsoft.Json;
 
 namespace Magento.RestApi.Json
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class EnumConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
         {
             if (value != null)
             {
-                writer.WriteValue(((int)value));
+                writer.WriteValue(((int) value));
+            }
+            else
+            {
+                writer.WriteValue(string.Empty);
             }
         }
 
