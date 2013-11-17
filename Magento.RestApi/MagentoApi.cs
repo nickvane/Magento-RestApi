@@ -17,6 +17,9 @@ using JsonSerializer = Magento.RestApi.Json.JsonSerializer;
 
 namespace Magento.RestApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MagentoApi : IMagentoApi
     {
         private string _url;
@@ -48,6 +51,14 @@ namespace Magento.RestApi
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="consumerKey"></param>
+        /// <param name="consumerSecret"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public IMagentoApi Initialize(string url, string consumerKey, string consumerSecret)
         {
             if (string.IsNullOrEmpty(url)) throw new ArgumentNullException(url);
@@ -323,8 +334,13 @@ namespace Magento.RestApi
         private async Task<MagentoApiResponse<T>> Execute<T>(IRestRequest request, bool isSecondTry = false) where T : new()
         {
             Client.FollowRedirects = request.Method != Method.POST;
-            var response = await Client.GetResponseAsync<T>(request);
-            return await HandleResponse(response, request, isSecondTry);
+            var response = await Client.ExecuteTaskAsync(request);
+            if (response.ContentType.ToUpperInvariant() == "APPLICATION/JSON")
+            {
+                var result = _jsonSerializer.Deserialize<T>(response);
+                return await HandleResponse(response, request, isSecondTry);
+            }
+            
         }
 
         private async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse<T> response, IRestRequest request, bool isSecondTry) where T : new()
@@ -354,7 +370,7 @@ namespace Magento.RestApi
         private async Task<IRestResponse> Execute(IRestRequest request, bool isSecondTry = false)
         {
             Client.FollowRedirects = request.Method != Method.POST;
-            var response = await Client.GetResponseAsync(request);
+            var response = await Client.ExecuteTaskAsync(request);
             return await HandleResponse(response, request, isSecondTry);
         }
 
