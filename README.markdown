@@ -66,13 +66,16 @@ Following Magento REST API features are currently implemented:
 	* Product Websites
 * Customers
 * Customer Addresses 
+* Orders (contains order items and addresses)
 
 For the supported features and usage of the library take a look at the integration tests.
 
 Todo features:
 
-* Orders
-	* Order Addresses
-	* Order Comments
-	* Order Items
+* Order Addresses
+* Order Comments
+* Order Items
 
+### More info
+
+The library uses Restsharp for the http communication with the Magento Rest API. The minimum version for RestSharp is 
