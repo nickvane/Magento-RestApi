@@ -23,7 +23,7 @@ namespace Magento.RestApi.Json
                 return result;
             }
             if (objectType == typeof(double?)) return null;
-            return 0;
+            return 0.0;
         }
 
         public override bool CanConvert(Type objectType)

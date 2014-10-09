@@ -52,6 +52,14 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// 
         /// </summary>
+        public string email
+        {
+            get { return GetValue(x => x.email); }
+            set { SetValue(x => x.email, value); }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public string company
         {
             get { return GetValue(x => x.company); }
