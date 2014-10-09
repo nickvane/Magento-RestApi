@@ -56,6 +56,7 @@
         /// <summary>
         /// 
         /// </summary>
-        nin 
+        nin,
+        like
     }
 }

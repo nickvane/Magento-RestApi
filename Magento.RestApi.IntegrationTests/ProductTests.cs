@@ -305,5 +305,22 @@ namespace Magento.RestApi.IntegrationTests
             Assert.AreEqual(product.tier_price.First().website_id, updatedProduct.tier_price.First().website_id);
             Assert.AreEqual(product.tier_price.First().price_qty, updatedProduct.tier_price.First().price_qty);
         }
+
+        [Test]
+        public void WhenGettingProductsWithFilterShouldReturnProducts()
+        {
+            // Arrange
+            var filter = new Filter();
+            filter.FilterExpressions.Add(new FilterExpression("name", ExpressionOperator.@in, "Inter*"));
+            filter.PageSize = 5;
+            filter.Page = 0;
+
+            // Act
+            var response = Client.GetProducts(filter).Result;
+
+            // Assert
+            Assert.IsFalse(response.HasErrors, response.ErrorString);
+            Assert.AreEqual(5, response.Result.Count);
+        }
     }
 }

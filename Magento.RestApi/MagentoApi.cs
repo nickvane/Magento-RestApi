@@ -39,12 +39,10 @@ namespace Magento.RestApi
         {
             get
             {
-                if (_isAuthenticating)
+                if (!_isAuthenticating) return _client;
+                lock (_client)
                 {
-                    lock (_client)
-                    {
-                        // lock access to the client when authenticating
-                    }
+                    // lock access to the client when authenticating
                 }
                 return _client;
             }
@@ -77,7 +75,12 @@ namespace Magento.RestApi
         {
             _jsonSerializer = new JsonSerializer();
             _client = new RestClient(_url);
-            _client.AddDefaultHeader("Content-type", "application/json");
+
+            _client.AddDefaultHeader("Content-Type", "application/json");
+            // Seriously Magento? http://www.magentocommerce.com/boards/viewthread/295646/
+            _client.AddDefaultHeader("Content_Type", "application/json");
+
+            _client.ClearHandlers(); // http://stackoverflow.com/questions/22229393/why-is-restsharp-addheaderaccept-application-json-to-a-list-of-item
             _client.AddHandler("application/json", _jsonSerializer);
         }
 
@@ -332,12 +335,10 @@ namespace Magento.RestApi
         private async Task<MagentoApiResponse<T>> Execute<T>(IRestRequest request, bool isSecondTry = false) where T : new()
         {
             Client.FollowRedirects = request.Method != Method.POST;
-            var response = await Client.ExecuteTaskAsync(request);
-            // TODO: maybe also check for valid http status codes?
-            if (response.ContentType.Split(';')[0].ToUpperInvariant() == "APPLICATION/JSON")
+            var response = await Client.ExecuteTaskAsync<T>(request);
+            if (response.ContentType.ToUpperInvariant().Contains("APPLICATION/JSON"))
             {
-                var result = _jsonSerializer.Deserialize<T>(response);
-                return await HandleResponse(response, result, request, isSecondTry);
+                return await HandleResponse(response, request, isSecondTry);
             }
             var errors = new List<MagentoError>
             {
@@ -346,10 +347,20 @@ namespace Magento.RestApi
                     Message = "The response doesn't contain json and cannot be deserialized: See ErrorString for the content of the response."
                 }
             };
-            return new MagentoApiResponse<T> { Errors = errors, RequestUrl = Client.BuildUri(request), ErrorString = response.Content };
+
+            var requestBodyParameter = request.Parameters.FirstOrDefault(x => x.Type == ParameterType.RequestBody);
+            var requestContent = requestBodyParameter == null ? string.Empty : requestBodyParameter.Value == null ? string.Empty : requestBodyParameter.Value.ToString();
+
+            return new MagentoApiResponse<T>
+            {
+                Errors = errors, 
+                RequestUrl = Client.BuildUri(request), 
+                ErrorString = response.Content,
+                RequestContent = requestContent
+            };
         }
 
-        private async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse response, T result, IRestRequest request, bool isSecondTry) where T : new()
+        private async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse<T> response, IRestRequest request, bool isSecondTry) where T : new()
         {
             if (response.ErrorException != null)
             {
@@ -367,10 +378,20 @@ namespace Magento.RestApi
                 }
 
                 var errors = GetErrorsFromResponse(response);
-                return new MagentoApiResponse<T> { Errors = errors, RequestUrl = Client.BuildUri(request), ErrorString = response.Content };
+
+                var requestBodyParameter = request.Parameters.FirstOrDefault(x => x.Type == ParameterType.RequestBody);
+                var requestContent = requestBodyParameter == null ? string.Empty : requestBodyParameter.Value == null ? string.Empty : requestBodyParameter.Value.ToString();
+
+                return new MagentoApiResponse<T>
+                {
+                    Errors = errors,
+                    RequestUrl = Client.BuildUri(request),
+                    ErrorString = response.Content,
+                    RequestContent = requestContent
+                };
             }
 
-            return new MagentoApiResponse<T> { Result = result, RequestUrl = Client.BuildUri(request) };
+            return new MagentoApiResponse<T> { Result = response.Data, RequestUrl = Client.BuildUri(request) };
         }
 
         private async Task<IRestResponse> Execute(IRestRequest request, bool isSecondTry = false)
@@ -400,14 +421,20 @@ namespace Magento.RestApi
             return response;
         }
 
-        private MagentoApiResponse<bool> CreateMagentoResponse(IRestResponse restResponse)
+        private MagentoApiResponse<bool> CreateMagentoResponse(IRestResponse restResponse, IRestRequest request)
         {
-            return new MagentoApiResponse<bool> { 
+            var requestBodyParameter = request.Parameters.FirstOrDefault(x => x.Type == ParameterType.RequestBody);
+            var requestContent = requestBodyParameter == null ? string.Empty : requestBodyParameter.Value == null ? string.Empty : requestBodyParameter.Value.ToString();
+
+            return new MagentoApiResponse<bool>
+            {
                 Result = true,
                 RequestUrl = Client.BuildUri(restResponse.Request),
                 Errors = GetErrorsFromResponse(restResponse),
-                ErrorString = restResponse.Content};
-        } 
+                ErrorString = restResponse.Content,
+                RequestContent = requestContent
+            };
+        }
 
         private List<MagentoError> GetErrorsFromResponse(IRestResponse restResponse)
         {
@@ -445,19 +472,19 @@ namespace Magento.RestApi
         private void AddFilterToRequest(Filter filter, IRestRequest request)
         {
             if (filter == null) return;
-            if (filter.Page > 1) request.AddParameter("page", filter.Page);
-            if (filter.PageSize > 1) request.AddParameter("limit", filter.PageSize);
-            if (!string.IsNullOrEmpty(filter.SortField))
-            {
-                request.AddParameter("order", filter.SortField);
-                request.AddParameter("dir", filter.SortDirection);
-            }
             var index = 0;
             foreach (var expression in filter.FilterExpressions)
             {
                 request.AddParameter("filter[" + index + "][attribute]", expression.FieldName);
                 request.AddParameter("filter[" + index + "][" + expression.ExpressionOperator + "]", expression.FieldValue);
                 index++;
+            }
+            if (filter.Page > 1) request.AddParameter("page", filter.Page);
+            if (filter.PageSize > 1) request.AddParameter("limit", filter.PageSize);
+            if (!string.IsNullOrEmpty(filter.SortField))
+            {
+                request.AddParameter("order", filter.SortField);
+                request.AddParameter("dir", filter.SortDirection);
             }
         }
 
@@ -572,7 +599,7 @@ namespace Magento.RestApi
                 request.AddBody(product);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> {Result = true};
         }
@@ -588,7 +615,7 @@ namespace Magento.RestApi
                 request.AddBody(product);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Result = true };
         }
@@ -599,7 +626,7 @@ namespace Magento.RestApi
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            return CreateMagentoResponse(response, request);
         }
 
         #endregion
@@ -636,7 +663,7 @@ namespace Magento.RestApi
             request.AddBody(new {website_id = websiteId});
 
             var response = await Execute(request);
-            var magentoResponse = CreateMagentoResponse(response);
+            var magentoResponse = CreateMagentoResponse(response, request);
             // if the response contains the error that the product is already assigned, then ignore it and remove the errors.
             if (magentoResponse.Errors != null && magentoResponse.Errors.Count(e => e.Message.Contains("Product #" + productId + " is already assigned to website #" + websiteId)) > 0)
             {
@@ -652,7 +679,7 @@ namespace Magento.RestApi
             request.AddParameter("websiteId", websiteId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            var magentoResponse = CreateMagentoResponse(response);
+            var magentoResponse = CreateMagentoResponse(response, request);
             // if the response contains the error that the product is already assigned, then ignore it and remove the errors.
             if (magentoResponse.Errors != null && magentoResponse.Errors.Count(e => e.Message.Contains("Product #" + productId + " isn't assigned to website #" + websiteId)) > 0)
             {
@@ -695,7 +722,7 @@ namespace Magento.RestApi
             request.AddBody(new { category_id = categoryId });
 
             var response = await Execute(request);
-            var magentoResponse = CreateMagentoResponse(response);
+            var magentoResponse = CreateMagentoResponse(response, request);
             // if the response contains the error that the product is already assigned, then ignore it and remove the errors.
             if (magentoResponse.Errors != null && magentoResponse.Errors.Count(e => e.Message.Contains("Product #" + productId + " is already assigned to category #" + categoryId)) > 0)
             {
@@ -711,7 +738,7 @@ namespace Magento.RestApi
             request.AddParameter("categoryId", categoryId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            var magentoResponse = CreateMagentoResponse(response);
+            var magentoResponse = CreateMagentoResponse(response, request);
             // if the response contains the error that the product is already assigned, then ignore it and remove the errors.
             if (magentoResponse.Errors != null && magentoResponse.Errors.Count(e => e.Message.Contains("Product #" + productId + " isn't assigned to category #" + categoryId)) > 0)
             {
@@ -781,7 +808,7 @@ namespace Magento.RestApi
                 request.AddBody(imageInfo);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Result = true };
         }
@@ -802,7 +829,7 @@ namespace Magento.RestApi
                 request.AddBody(imageInfo);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Result = true };
         }
@@ -850,7 +877,7 @@ namespace Magento.RestApi
             request.AddParameter("imageId", imageId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            return CreateMagentoResponse(response, request);
         }
 
         public async Task<MagentoApiResponse<bool>> UnAssignImageFromProductForStore(int productId, int storeId, int imageId)
@@ -861,7 +888,7 @@ namespace Magento.RestApi
             request.AddParameter("storeId", storeId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            return CreateMagentoResponse(response, request);
         }
 
         #endregion
@@ -896,7 +923,7 @@ namespace Magento.RestApi
                 request.AddBody(stockItem);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Result = true };
         }
@@ -912,7 +939,7 @@ namespace Magento.RestApi
                 request.AddBody(stockItem);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Errors = serverStockItem.Errors, ErrorString = serverStockItem.ErrorString, RequestUrl = serverStockItem.RequestUrl };
         }
@@ -976,7 +1003,7 @@ namespace Magento.RestApi
                 request.AddBody(customer);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Result = true };
         }
@@ -987,7 +1014,7 @@ namespace Magento.RestApi
             request.AddParameter("customerId", customerId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            return CreateMagentoResponse(response, request);
        } 
         public async Task<MagentoApiResponse<IList<CustomerAddress>>> GetAddressesForCustomer(int customerId)
         {
@@ -1044,7 +1071,7 @@ namespace Magento.RestApi
                 request.AddBody(address);
 
                 var response = await Execute(request);
-                return CreateMagentoResponse(response);
+                return CreateMagentoResponse(response, request);
             }
             return new MagentoApiResponse<bool> { Result = true };
         }
@@ -1055,7 +1082,7 @@ namespace Magento.RestApi
             request.AddParameter("addressId", addressId, ParameterType.UrlSegment);
 
             var response = await Execute(request);
-            return CreateMagentoResponse(response);
+            return CreateMagentoResponse(response, request);
         }
 
         #endregion
