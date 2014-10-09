@@ -334,7 +334,7 @@ namespace Magento.RestApi
             Client.FollowRedirects = request.Method != Method.POST;
             var response = await Client.ExecuteTaskAsync(request);
             // TODO: maybe also check for valid http status codes?
-            if (response.ContentType.ToUpperInvariant() == "APPLICATION/JSON")
+            if (response.ContentType.Split(';')[0].ToUpperInvariant() == "APPLICATION/JSON")
             {
                 var result = _jsonSerializer.Deserialize<T>(response);
                 return await HandleResponse(response, result, request, isSecondTry);
