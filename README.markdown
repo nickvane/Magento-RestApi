@@ -50,6 +50,33 @@ if (!response.HasErrors)
 }
 ```
 
+**Usage in an ASP.net application**: 
+The client call should be wrapped in a new aync task and should then be registered with the page (from a button click or Page_Load).
+
+```
+protected void ButtonGetProductInfo_Click(object sender, EventArgs e)
+{
+    RegisterAsyncTask(new PageAsyncTask(GetProductInfo));
+}
+
+private async Task GetProductInfo()
+{
+    var response = await client.GetProductBySku(textboxGetProductInfo.Text.Trim());
+    var product = response.Result;
+}
+```
+
+For this to work, you need to add Async="true" to the page directive
+
+```
+<%@ Page Title="Async" Language="C#" CodeBehind="Async.aspx.cs" Inherits="Whatever" Async="true" %>
+```
+
+Some good reading here:
+[The Magic of using Asynchronous Methods in ASP.NET 4.5 plus an important gotcha](http://www.hanselman.com/blog/TheMagicOfUsingAsynchronousMethodsInASPNET45PlusAnImportantGotcha.aspx)
+
+Thank you [Scotty79](https://github.com/Scotty79) for figuring that out, from [issue 11](https://github.com/nickvane/Magento-RestApi/issues/11)
+
 ### Features
 
 * Can be used in multiple threads
@@ -72,8 +99,8 @@ For the supported features and usage of the library take a look at the integrati
 
 Todo features:
 
-* Order Addresses
 * Order Comments
+* Order Addresses
 * Order Items
 
 ### More info
