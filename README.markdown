@@ -105,4 +105,6 @@ Todo features:
 
 ### More info
 
-The library uses Restsharp for the http communication with the Magento Rest API. The minimum version for RestSharp is 
+The library is tested against Magento versions:
+* 1.7.0.*: all actions tested
+* 1.9.1.*: authentication tested
