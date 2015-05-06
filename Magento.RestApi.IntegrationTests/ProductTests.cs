@@ -307,11 +307,11 @@ namespace Magento.RestApi.IntegrationTests
         }
 
         [Test]
-        public void WhenGettingProductsWithFilterShouldReturnProducts()
+        public void WhenGettingProductsWithLikeFilterShouldReturnProducts()
         {
             // Arrange
             var filter = new Filter();
-            filter.FilterExpressions.Add(new FilterExpression("name", ExpressionOperator.@in, "Inter*"));
+            filter.FilterExpressions.Add(new FilterExpression("name", ExpressionOperator.like, "Melting%"));
             filter.PageSize = 5;
             filter.Page = 0;
 
@@ -320,7 +320,7 @@ namespace Magento.RestApi.IntegrationTests
 
             // Assert
             Assert.IsFalse(response.HasErrors, response.ErrorString);
-            Assert.AreEqual(5, response.Result.Count);
+            Assert.AreEqual(1, response.Result.Count);
         }
     }
 }

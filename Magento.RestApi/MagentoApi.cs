@@ -49,7 +49,7 @@ namespace Magento.RestApi
         }
 
         /// <summary>
-        /// 
+        /// Initializes the client, setting url, consumerkey and consumersecret and adding default request headers and handlers
         /// </summary>
         /// <param name="url"></param>
         /// <param name="consumerKey"></param>
@@ -86,6 +86,12 @@ namespace Magento.RestApi
 
         #region Authentication
 
+        /// <summary>
+        /// When you want to follow and control the standard oauth procedure yourself, this lets you set the access token and secret you have received.
+        /// </summary>
+        /// <param name="accessTokenKey">The access token</param>
+        /// <param name="accessTokenSecret">The corresponding access token secret</param>
+        /// <returns>this, for fluent configuration</returns>
         public IMagentoApi SetAccessToken(string accessTokenKey, string accessTokenSecret)
         {
             _accessTokenKey = accessTokenKey;
@@ -101,12 +107,24 @@ namespace Magento.RestApi
             return this;
         }
 
+        /// <summary>
+        /// If the Magento installation doesn't follow the default naming for the admin section, you can set it here.
+        /// </summary>
+        /// <param name="adminUrlPart">The part of the url that is for admin access. The default is 'admin'.</param>
+        /// <returns>this, for fluent configuration</returns>
         public IMagentoApi SetCustomAdminUrlPart(string adminUrlPart)
         {
             if (!string.IsNullOrEmpty(adminUrlPart)) _adminUrlPart = adminUrlPart;
             return this;
         }
 
+        /// <summary>
+        /// This gets the access token and secret without opening a browser to let the user log in.
+        /// This is primarely used for backend applications such as windows services where you can't let the user show a browser window.
+        /// </summary>
+        /// <param name="userName">The username of the user that is going to be used for the authentication. The user must be an administrator.</param>
+        /// <param name="password">The password of the user</param>
+        /// <returns>this, for fluent configuration</returns>
         public IMagentoApi AuthenticateAdmin(string userName, string password)
         {
             lock (_client)
@@ -141,8 +159,7 @@ namespace Magento.RestApi
                     var oauthToken = queryStringValues["oauth_token"];
                     var oauthTokenSecret = queryStringValues["oauth_token_secret"];
 
-                    var queryString = string.Format("oauth_token={0}", oauthToken);
-                    var authorizeUrl = _url + "/" + _adminUrlPart + "/oauth_authorize?" + queryString;
+                    var authorizeUrl = _url + "/" + _adminUrlPart;
 
                     var webClient = new MagentoWebClient();
                     // PART 2: Log in the application
@@ -209,12 +226,18 @@ namespace Magento.RestApi
             }
             catch (WebException ex)
             {
-                if(ex.Response is HttpWebResponse && ((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotFound) throw new MagentoApiException(string.Format("Unable to load admin page: '{0}'. This usually indicates the admin section of the magento installation is at a different url and a customadminurlpart was not set.", loginUrl), ex);
+                var response = ex.Response as HttpWebResponse;
+                if(response != null && response.StatusCode == HttpStatusCode.NotFound) throw new MagentoApiException(string.Format("Unable to load admin page: '{0}'. This usually indicates the admin section of the magento installation is at a different url and a customadminurlpart was not set.", loginUrl), ex);
                 throw new MagentoApiException(string.Format("Unable to load admin page: '{0}'.", loginUrl), ex);
             }
 
             var loginForm = loginPage.GetElementbyId("loginForm");
+            // it may be possible (probably with a setting in Magento?) that there is no action provided on the form, fallback is loginurl
             var postUrl = loginForm.GetAttributeValue("action", string.Empty);
+            if (string.IsNullOrEmpty(postUrl))
+            {
+                postUrl = loginUrl;
+            }
             var formKey = loginPage.DocumentNode.Descendants("input").Single(node => node.Attributes.Any(a => a.Name == "name" && a.Value == "form_key")).GetAttributeValue("value", string.Empty);
 
             // Post the user credentials to the post action url and get the adminhtml cookie for future requests and the authorize url
@@ -320,7 +343,13 @@ namespace Magento.RestApi
 
         #region Boilerplate
 
-        private IRestRequest CreateRequest(string url, Method method = Method.GET)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        protected IRestRequest CreateRequest(string url, Method method = Method.GET)
         {
             var request = new RestRequest
                               {
@@ -332,7 +361,14 @@ namespace Magento.RestApi
             return request;
         }
 
-        private async Task<MagentoApiResponse<T>> Execute<T>(IRestRequest request, bool isSecondTry = false) where T : new()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="isSecondTry"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        protected async Task<MagentoApiResponse<T>> Execute<T>(IRestRequest request, bool isSecondTry = false) where T : new()
         {
             Client.FollowRedirects = request.Method != Method.POST;
             var response = await Client.ExecuteTaskAsync<T>(request);
@@ -360,7 +396,16 @@ namespace Magento.RestApi
             };
         }
 
-        private async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse<T> response, IRestRequest request, bool isSecondTry) where T : new()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="request"></param>
+        /// <param name="isSecondTry"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="MagentoApiException"></exception>
+        protected async Task<MagentoApiResponse<T>> HandleResponse<T>(IRestResponse<T> response, IRestRequest request, bool isSecondTry) where T : new()
         {
             if (response.ErrorException != null)
             {
@@ -394,14 +439,28 @@ namespace Magento.RestApi
             return new MagentoApiResponse<T> { Result = response.Data, RequestUrl = Client.BuildUri(request) };
         }
 
-        private async Task<IRestResponse> Execute(IRestRequest request, bool isSecondTry = false)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="isSecondTry"></param>
+        /// <returns></returns>
+        protected async Task<IRestResponse> Execute(IRestRequest request, bool isSecondTry = false)
         {
             Client.FollowRedirects = request.Method != Method.POST;
             var response = await Client.ExecuteTaskAsync(request);
             return await HandleResponse(response, request, isSecondTry);
         }
 
-        private async Task<IRestResponse> HandleResponse(IRestResponse response, IRestRequest request, bool isSecondTry)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="request"></param>
+        /// <param name="isSecondTry"></param>
+        /// <returns></returns>
+        /// <exception cref="MagentoApiException"></exception>
+        protected async Task<IRestResponse> HandleResponse(IRestResponse response, IRestRequest request, bool isSecondTry)
         {
             if (response.ErrorException != null)
             {
@@ -421,7 +480,13 @@ namespace Magento.RestApi
             return response;
         }
 
-        private MagentoApiResponse<bool> CreateMagentoResponse(IRestResponse restResponse, IRestRequest request)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="restResponse"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        protected MagentoApiResponse<bool> CreateMagentoResponse(IRestResponse restResponse, IRestRequest request)
         {
             var requestBodyParameter = request.Parameters.FirstOrDefault(x => x.Type == ParameterType.RequestBody);
             var requestContent = requestBodyParameter == null ? string.Empty : requestBodyParameter.Value == null ? string.Empty : requestBodyParameter.Value.ToString();
@@ -436,7 +501,12 @@ namespace Magento.RestApi
             };
         }
 
-        private List<MagentoError> GetErrorsFromResponse(IRestResponse restResponse)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="restResponse"></param>
+        /// <returns></returns>
+        protected List<MagentoError> GetErrorsFromResponse(IRestResponse restResponse)
         {
             var list = new List<MagentoError>();
             if (!string.IsNullOrEmpty(restResponse.Content))
@@ -469,7 +539,12 @@ namespace Magento.RestApi
             return list;
         }
 
-        private void AddFilterToRequest(Filter filter, IRestRequest request)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="request"></param>
+        protected void AddFilterToRequest(Filter filter, IRestRequest request)
         {
             if (filter == null) return;
             var index = 0;
@@ -494,6 +569,10 @@ namespace Magento.RestApi
 
         #region products
 
+        /// <summary>
+        /// Allows you to retrieve the list of all products with detailed information.
+        /// </summary>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<Product>>> GetProducts(Filter filter)
         {
             var request = CreateRequest("/api/rest/products");
@@ -508,6 +587,12 @@ namespace Magento.RestApi
             return new MagentoApiResponse<IList<Product>>{ Errors = response.Errors, RequestUrl = response.RequestUrl };
         }
 
+        /// <summary>
+        /// Allows you to retrieve the list of products of a specified category. These products will be returned in the product position ascending order.
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<Product>>> GetProductsByCategoryId(int categoryId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products");
@@ -522,6 +607,11 @@ namespace Magento.RestApi
             return new MagentoApiResponse<IList<Product>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Get a product by id.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<Product>> GetProductById(int productId)
         {
             var request = CreateRequest("/api/rest/products/{productId}");
@@ -530,6 +620,12 @@ namespace Magento.RestApi
             return await Execute<Product>(request);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<Product>> GetProductByIdForStore(int productId, int storeId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/store/{storeId}");
@@ -539,6 +635,12 @@ namespace Magento.RestApi
             return await Execute<Product>(request);
         }
 
+        /// <summary>
+        /// Get a product by sku.
+        /// </summary>
+        /// <param name="sku"></param>
+        /// <returns></returns>
+        /// <exception cref="Magento.RestApi.MagentoApiException">If more than 1 product is returned for sku.</exception>
         public async Task<MagentoApiResponse<Product>> GetProductBySku(string sku)
         {
             var request = CreateRequest("/api/rest/products");
@@ -556,6 +658,12 @@ namespace Magento.RestApi
             return new MagentoApiResponse<Product> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Get a product by sku for a specific store
+        /// </summary>
+        /// <param name="sku"></param>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<Product>> GetProductBySkuForStore(string sku, int storeId)
         {
             var response = await GetProductBySku(sku);
@@ -566,6 +674,11 @@ namespace Magento.RestApi
             return response;
         }
 
+        /// <summary>
+        /// Saves the product as new product. Throws exception if product already exists.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns>The id of the newly created product.</returns>
         public async Task<MagentoApiResponse<int>> CreateNewProduct(Product product)
         {
             if (product.entity_id != 0) throw new MagentoApiException("A new product can't have an entity_id.");
@@ -574,7 +687,7 @@ namespace Magento.RestApi
             request.AddBody(product);
 
             var response = await Execute(request);
-            int productId = 0;
+            var productId = 0;
             var location = response.Headers.FirstOrDefault(h => h.Name.Equals("Location"));
             if (location != null)
             {
@@ -589,9 +702,13 @@ namespace Magento.RestApi
                        };
         }
 
+        /// <summary>
+        /// Updates an existing product. Throws exception if product doesn't exist.
+        /// </summary>
+        /// <param name="product"></param>
         public async Task<MagentoApiResponse<bool>> UpdateProduct(Product product)
         {
-            if (product == null) throw new ArgumentNullException("product");
+            if (product == null) throw new ArgumentNullException(nameof(product));
             if (product.HasChanged())
             {
                 var request = CreateRequest("/api/rest/products/{productId}", Method.PUT);
@@ -604,9 +721,14 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> {Result = true};
         }
 
+        /// <summary>
+        /// Updates an existing product for a specific store. Throws exception if product doesn't exist.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="storeId"></param>
         public async Task<MagentoApiResponse<bool>> UpdateProductForStore(Product product, int storeId)
         {
-            if (product == null) throw new ArgumentNullException("product");
+            if (product == null) throw new ArgumentNullException(nameof(product));
             if (product.HasChanged())
             {
                 var request = CreateRequest("/api/rest/products/{productId}/store/{storeId}", Method.PUT);
@@ -620,6 +742,10 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
+        /// <summary>
+        /// Deletes a product.
+        /// </summary>
+        /// <param name="productId"></param>
         public async Task<MagentoApiResponse<bool>> DeleteProduct(int productId)
         {
             var request = CreateRequest("/api/rest/products/{productId}", Method.DELETE);
@@ -633,6 +759,11 @@ namespace Magento.RestApi
 
         #region websites
 
+        /// <summary>
+        /// Allows you to retrieve information about websites assigned to a product
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<int>>> GetWebsitesForProduct(int productId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/websites");
@@ -656,6 +787,11 @@ namespace Magento.RestApi
                        };
         }
 
+        /// <summary>
+        /// Allows you to assign a website to a specified product.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="websiteId"></param>
         public async Task<MagentoApiResponse<bool>> AssignWebsiteToProduct(int productId, int websiteId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/websites", Method.POST);
@@ -672,6 +808,11 @@ namespace Magento.RestApi
             return magentoResponse;
         }
 
+        /// <summary>
+        /// Allows you to unassign a website from a specified product.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="websiteId"></param>
         public async Task<MagentoApiResponse<bool>> UnassignWebsiteFromProduct(int productId, int websiteId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/websites/{websiteId}", Method.DELETE);
@@ -692,6 +833,12 @@ namespace Magento.RestApi
 
         #region categories
 
+        /// <summary>
+        /// Allows you to retrieve information about assigned categories.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<int>>> GetCategoriesForProduct(int productId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products/{productId}/categories");
@@ -715,6 +862,11 @@ namespace Magento.RestApi
             };
         }
 
+        /// <summary>
+        /// Allows you to assign a category to a product.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="categoryId"></param>
         public async Task<MagentoApiResponse<bool>> AssignCategoryToProduct(int productId, int categoryId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/categories", Method.POST);
@@ -731,6 +883,11 @@ namespace Magento.RestApi
             return magentoResponse;
         }
 
+        /// <summary>
+        /// Allows you to unassign a category from a product.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="categoryId"></param>
         public async Task<MagentoApiResponse<bool>> UnAssignCategoryFromProduct(int productId, int categoryId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/categories/{categoryId}", Method.DELETE);
@@ -751,6 +908,13 @@ namespace Magento.RestApi
 
         #region images
 
+        /// <summary>
+        /// Allows you to retrieve information about all images of a specified product. 
+        /// If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProduct(int productId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images");
@@ -762,6 +926,14 @@ namespace Magento.RestApi
                 : new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Allows you to retrieve information about product images for a specified store view.
+        /// Images can have different labels for different stores. For example, image label "flower" in the English store view can be set as "fleur" in the French store view. If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="storeId"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<ImageInfo>>> GetImagesForProductForStore(int productId, int storeId, Filter filter = null)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/store/{storeId}");
@@ -774,6 +946,13 @@ namespace Magento.RestApi
                 : new MagentoApiResponse<IList<ImageInfo>> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Allows you to retrieve information about a specified product image.
+        /// If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<ImageInfo>> GetImageInfoForProduct(int productId, int imageId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}");
@@ -783,6 +962,14 @@ namespace Magento.RestApi
             return await Execute<ImageInfo>(request);
         }
 
+        /// <summary>
+        /// Allows you to retrieve information about the specified product image from a specified store.
+        /// If there are custom attributes with the Catalog Input Type for Store Owner option set to Media Image, these attributes will be also returned in the response as an image type.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="storeId"></param>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<ImageInfo>> GetImageInfoForProductForStore(int productId, int storeId, int imageId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}/store/{storeId}");
@@ -793,9 +980,17 @@ namespace Magento.RestApi
             return await Execute<ImageInfo>(request);
         }
 
+        /// <summary>
+        /// Allows you to update information for the specified product image.
+        /// When updating information, you need to pass only those parameters that you want to be updated. Parameters that were not passed in the request will preserve the previous values.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="imageId"></param>
+        /// <param name="imageInfo"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UpdateImageInfoForProduct(int productId, int imageId, ImageInfo imageInfo)
         {
-            if (imageInfo == null) throw new ArgumentNullException("imageInfo");
+            if (imageInfo == null) throw new ArgumentNullException(nameof(imageInfo));
             if (imageInfo.HasChanged())
             {
                 if (imageInfo.HasChanged(i => i.file_content))
@@ -813,9 +1008,18 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
+        /// <summary>
+        /// Allows you to update the specified product image information for s specified store.
+        /// When updating information, you need to pass only those parameters that you want to be updated. Parameters that were not passed in the request, will preserve the previous values.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="storeId"></param>
+        /// <param name="imageId"></param>
+        /// <param name="imageInfo"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UpdateImageInfoForProductForStore(int productId, int storeId, int imageId, ImageInfo imageInfo)
         {
-            if (imageInfo == null) throw new ArgumentNullException("imageInfo");
+            if (imageInfo == null) throw new ArgumentNullException(nameof(imageInfo));
             if (imageInfo.HasChanged())
             {
                 if (imageInfo.HasChanged(i => i.file_content))
@@ -834,9 +1038,15 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
+        /// <summary>
+        /// Allows you to add an image for the required product.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="image"></param>
+        /// <returns>The id of the newly created image.</returns>
         public async Task<MagentoApiResponse<int>> AddImageToProduct(int productId, ImageFile image)
         {
-            if (image == null) throw new ArgumentNullException("image");
+            if (image == null) throw new ArgumentNullException(nameof(image));
             if (image.HasChanged())
             {
                 var request = CreateRequest("/api/rest/products/{productId}/images", Method.POST);
@@ -870,6 +1080,13 @@ namespace Magento.RestApi
             return new MagentoApiResponse<int> { Result = 0 };
         }
 
+        /// <summary>
+        /// Allows you to remove the specified image from a product.
+        /// The image will not be deleted physically, the image parameters will be set to No Image.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UnassignImageFromProduct(int productId, int imageId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}", Method.DELETE);
@@ -880,6 +1097,14 @@ namespace Magento.RestApi
             return CreateMagentoResponse(response, request);
         }
 
+        /// <summary>
+        /// Allows you to remove an image from the required product in the specified store.
+        /// The image will not be deleted physically, the image parameters will be set to No Image for the current store.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="storeId"></param>
+        /// <param name="imageId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UnAssignImageFromProductForStore(int productId, int storeId, int imageId)
         {
             var request = CreateRequest("/api/rest/products/{productId}/images/{imageId}/store/{storeId}", Method.DELETE);
@@ -895,6 +1120,12 @@ namespace Magento.RestApi
 
         #region Inventory
 
+        /// <summary>
+        /// Allows you to retrieve the stock item information.
+        /// The list of attributes that will be returned for stock items is configured in the Magento Admin Panel.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<StockItem>> GetStockItemForProduct(int productId)
         {
             var request = CreateRequest("/api/rest/stockitems");
@@ -912,9 +1143,15 @@ namespace Magento.RestApi
             return new MagentoApiResponse<StockItem> { RequestUrl = response.RequestUrl, Errors = response.Errors, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Allows you to update existing stock item data.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="stockItem"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UpdateStockItemForProduct(int productId, StockItem stockItem)
         {
-            if (stockItem == null) throw new ArgumentNullException("stockItem");
+            if (stockItem == null) throw new ArgumentNullException(nameof(stockItem));
             if (stockItem.HasChanged())
             {
                 var serverStockItem = await GetStockItemForProduct(productId);
@@ -928,6 +1165,12 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
+        /// <summary>
+        /// Allows you to update the quantity of the stock for a product.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UpdateStockQuantityForProduct(int productId, double quantity)
         {
             var serverStockItem = await GetStockItemForProduct(productId);
@@ -948,6 +1191,12 @@ namespace Magento.RestApi
 
         #region Customers
 
+        /// <summary>
+        /// Allows you to retrieve the list of existing customers.
+        /// Only Admin user can retrieve the list of customers with all their attributes.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<Customer>>> GetCustomers(Filter filter)
         {
             var request = CreateRequest("/api/rest/customers");
@@ -962,6 +1211,11 @@ namespace Magento.RestApi
             return new MagentoApiResponse<IList<Customer>> { Errors = response.Errors, RequestUrl = response.RequestUrl };
         }
 
+        /// <summary>
+        /// Allows you to create a new customer.
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<int>> CreateNewCustomer(Customer customer)
         {
             if (customer.entity_id != 0) throw new MagentoApiException("A new customer can't have an entity_id.");
@@ -985,6 +1239,12 @@ namespace Magento.RestApi
             };
         }
 
+        /// <summary>
+        /// Allows you to retrieve information on an existing customer.
+        /// The list of attributes that will be returned for customers is configured in the Magento Admin Panel. The Customer user type has access only to his/her own information. Also, Admin can add additional non-system customer attributes by selecting Customers > Attributes > Manage Customer Attributes. If these attributes are set as visible on frontend, they will be returned in the response. Also, custom attributes will be returned in the response only after the customer information is updated in the Magento Admin Panel or the specified custom attribute is updated via API (see the PUT method below). Please note that managing customer attributes is available only in Magento Enterprise Edition.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<Customer>> GetCustomerById(int customerId)
         {
             var request = CreateRequest("/api/rest/customers/{customerId}");
@@ -993,9 +1253,15 @@ namespace Magento.RestApi
             return await Execute<Customer>(request);
         }
 
+        /// <summary>
+        /// Allows you to update an existing customer.
+        /// The list of attributes that will be updated for customer is configured in the Magento Admin Panel. The Customer user type has access only to his/her own information.
+        /// </summary>
+        /// <param name="customer"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UpdateCustomer(Customer customer)
         {
-            if (customer == null) throw new ArgumentNullException("customer");
+            if (customer == null) throw new ArgumentNullException(nameof(customer));
             if (customer.HasChanged())
             {
                 var request = CreateRequest("/api/rest/customers/{customerId}", Method.PUT);
@@ -1008,6 +1274,11 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
+        /// <summary>
+        /// Allows you to delete an existing customer.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> DeleteCustomer(int customerId)
         {
             var request = CreateRequest("/api/rest/customers/{customerId}", Method.DELETE);
@@ -1015,7 +1286,13 @@ namespace Magento.RestApi
 
             var response = await Execute(request);
             return CreateMagentoResponse(response, request);
-       } 
+       }
+
+        /// <summary>
+        /// Allows you to retrieve the list of existing customer addresses.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<CustomerAddress>>> GetAddressesForCustomer(int customerId)
         {
             var request = CreateRequest("/api/rest/customers/{customerId}/addresses");
@@ -1030,6 +1307,12 @@ namespace Magento.RestApi
             return new MagentoApiResponse<IList<CustomerAddress>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Allows you to create a new address for the required customer.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<int>> CreateNewCustomerAddress(int customerId, CustomerAddress address)
         {
             if (address.entity_id != 0) throw new MagentoApiException("A new address can't have an entity_id.");
@@ -1053,6 +1336,11 @@ namespace Magento.RestApi
             };
         }
 
+        /// <summary>
+        /// Allows you to retrieve an existing customer address.
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<CustomerAddress>> GetCustomerAddressById(int addressId)
         {
             var request = CreateRequest("/api/rest/customers/addresses/{addressId}");
@@ -1061,9 +1349,14 @@ namespace Magento.RestApi
             return await Execute<CustomerAddress>(request);
         }
 
+        /// <summary>
+        /// Allows you to update an existing customer address.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> UpdateCustomerAddress(CustomerAddress address)
         {
-            if (address == null) throw new ArgumentNullException("address");
+            if (address == null) throw new ArgumentNullException(nameof(address));
             if (address.HasChanged())
             {
                 var request = CreateRequest("/api/rest/customers/addresses/{addressId}", Method.PUT);
@@ -1076,6 +1369,11 @@ namespace Magento.RestApi
             return new MagentoApiResponse<bool> { Result = true };
         }
 
+        /// <summary>
+        /// Allows you to delete an existing customer address.
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<bool>> DeleteCustomerAddress(int addressId)
         {
             var request = CreateRequest("/api/rest/customers/addresses/{addressId}", Method.DELETE);
@@ -1089,6 +1387,11 @@ namespace Magento.RestApi
 
         #region orders
 
+        /// <summary>
+        /// Allows you to retrieve the list of existing orders. Each order contains the following information: general order information, information on ordered items, order comments, and order addresses (both billing and shipping).
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<IList<Order>>> GetOrders(Filter filter)
         {
             var request = CreateRequest("/api/rest/orders");
@@ -1103,6 +1406,11 @@ namespace Magento.RestApi
             return new MagentoApiResponse<IList<Order>> { Errors = response.Errors, RequestUrl = response.RequestUrl, ErrorString = response.ErrorString };
         }
 
+        /// <summary>
+        /// Allows you to retrieve information on a single order.
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
         public async Task<MagentoApiResponse<Order>> GetOrderById(int orderId)
         {
             var request = CreateRequest("/api/rest/orders/{orderId}");

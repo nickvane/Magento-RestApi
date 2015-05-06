@@ -1,7 +1,7 @@
 ﻿using Magento.RestApi.Json;
 using Moq;
-using NUnit.Framework;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace Magento.RestApi.UnitTests.Json
 {
@@ -30,11 +30,11 @@ namespace Magento.RestApi.UnitTests.Json
         {
             // arrange
             var converter = new BoolConverter();
-            var writer1 = new Moq.Mock<JsonWriter>();
+            var writer1 = new Mock<JsonWriter>();
             writer1.Setup(x => x.WriteValue("0")).Verifiable();
-            var writer2 = new Moq.Mock<JsonWriter>();
+            var writer2 = new Mock<JsonWriter>();
             writer2.Setup(x => x.WriteValue("1")).Verifiable();
-            var writer3 = new Moq.Mock<JsonWriter>();
+            var writer3 = new Mock<JsonWriter>();
             writer3.Setup(x => x.WriteValue(string.Empty)).Verifiable();
 
             // act
@@ -53,11 +53,11 @@ namespace Magento.RestApi.UnitTests.Json
         {
             // arrange
             var converter = new BoolConverter();
-            var reader1 = new Moq.Mock<JsonReader>();
+            var reader1 = new Mock<JsonReader>();
             reader1.SetupGet(x => x.Value).Returns(null);
-            var reader2 = new Moq.Mock<JsonReader>();
+            var reader2 = new Mock<JsonReader>();
             reader2.SetupGet(x => x.Value).Returns("0");
-            var reader3 = new Moq.Mock<JsonReader>();
+            var reader3 = new Mock<JsonReader>();
             reader3.SetupGet(x => x.Value).Returns("1");
 
             // act
