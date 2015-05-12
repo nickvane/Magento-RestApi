@@ -5,8 +5,8 @@
   "authors": [ "Nick Van Eeckhout" ],
   "tags": [ "Magento", "REST" ],
   "projectUrl": "https://github.com/nickvane/Magento-RestApi",
-  "licenseUrl": "https://github.com/nickvane/Magento-RestApi/license.txt",
-  "iconUrl": "https://github.com/nickvane/Magento-RestApi/magento.restapi.icon.png",
+  "licenseUrl": "https://raw.githubusercontent.com/nickvane/Magento-RestApi/master/license.txt",
+  "iconUrl": "https://raw.githubusercontent.com/nickvane/Magento-RestApi/master/magento.restapi.icon.png",
 
   "dependencies": {
     "Newtonsoft.Json": "6.0.8",

@@ -4,6 +4,8 @@
 
 The client is specifically targeted to be used in background processes. Magento REST API uses 3-legged OAuth 1.0a protocol to authenticate the application to access the Magento service. Because it is not very useful to pop up browser windows from a background process (like a windows service) for the user to enter username and password, the client has an authentication method that simulates the login process without opening browser windows.
 
+[Available from nuget: Magento.RestApi](https://www.nuget.org/packages/Magento.RestApi/1.0.0) (as of 13/05/2015)
+
 ### Usage
 #### Authentication
 
@@ -80,7 +82,6 @@ Thank you [Scotty79](https://github.com/Scotty79) for figuring that out, from [i
 ### Features
 
 * Can be used in multiple threads
-* Should be able to be used in monotouch/monodroid (not provided yet)
 * Keeps track of changed properties so only changed values are updated
 * If oauth token is rejected after some time, the client re-authenticates and executes the failed request again.
 
@@ -106,5 +107,12 @@ Todo features:
 ### More info
 
 The library is tested against Magento versions:
+
 * 1.7.0.*: all actions tested
 * 1.9.1.*: authentication tested
+
+Support for .net framework 4.5 and higher due to usage of async/await keywords.
+As of 13/05/2015 support for dnx451 target framework. dnxcore50 currently unavailable due to 
+
+* dependencies not yet available for dnxcore50 (RestSharp, HtmlAgility)
+* certain parts of BCL not yet ported to dnxcore50
