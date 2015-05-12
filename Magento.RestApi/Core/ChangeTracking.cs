@@ -10,13 +10,9 @@ namespace Magento.RestApi.Core
     public class ChangeTracking<T> : IChangeTracking<T>
     {
         private readonly Dictionary<string, IProperty> _properties = new Dictionary<string, IProperty>();
-        private bool _hasStartedTracking;
 
         [JsonIgnore]
-        public bool HasStartedTracking
-        {
-            get { return _hasStartedTracking; }
-        }
+        public bool HasStartedTracking { get; private set; }
 
         public virtual bool HasChanged()
         {
@@ -26,16 +22,12 @@ namespace Magento.RestApi.Core
         public bool HasChanged<P>(Expression<Func<T, P>> expression)
         {
             var name = (expression.Body as MemberExpression).Member.Name;
-            if (_properties.ContainsKey(name))
-            {
-                return _properties[name].HasChanged();
-            }
-            return false;
+            return _properties.ContainsKey(name) && _properties[name].HasChanged();
         }
 
         public virtual void StartTracking()
         {
-            _hasStartedTracking = true;
+            HasStartedTracking = true;
             foreach (var property in _properties)
             {
                 property.Value.SetValueAsInitial();
@@ -45,13 +37,10 @@ namespace Magento.RestApi.Core
         public P GetValue<P>(Expression<Func<T, P>> expression)
         {
             var name = (expression.Body as MemberExpression).Member.Name;
-            if (!_properties.ContainsKey(name))
-            {
-                var property = new Property<P>();
-                if (_hasStartedTracking) property.SetValueAsInitial();
-                _properties.Add(name, property);
-                
-            }
+            if (_properties.ContainsKey(name)) return (_properties[name] as Property<P>).Value;
+            var property = new Property<P>();
+            if (HasStartedTracking) property.SetValueAsInitial();
+            _properties.Add(name, property);
             return (_properties[name] as Property<P>).Value;
         }
 
@@ -61,7 +50,7 @@ namespace Magento.RestApi.Core
             if (!_properties.ContainsKey(name))
             {
                 var property = new Property<P>();
-                if (_hasStartedTracking) property.SetValueAsInitial();
+                if (HasStartedTracking) property.SetValueAsInitial();
                 _properties.Add(name, property);
 
             }

@@ -1,12 +1,11 @@
 ﻿using System.Linq;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    [TestFixture]
-    public class ProductCategoryTests : BaseTest
+    public class ProductCategoryTests : BaseFixture
     {
-        [Test]
+        [Fact]
         public void ShouldGetCategoriesForProduct()
         {
             // Arrange
@@ -17,11 +16,11 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetCategoriesForProduct(productId).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(2, response.Result.Count);
+            Assert.False(response.HasErrors);
+            Assert.Equal(2, response.Result.Count);
         }
 
-        [Test]
+        [Fact]
         public void UnassignAndAssignCategoryToProduct()
         {
             // Arrange
@@ -36,13 +35,13 @@ namespace Magento.RestApi.IntegrationTests
             var response4 = Client.GetCategoriesForProduct(productId).Result;
             
             // Assert
-            Assert.IsFalse(response1.HasErrors);
-            Assert.AreEqual(1, response2.Result.Count);
-            Assert.IsFalse(response3.HasErrors);
-            Assert.AreEqual(2, response4.Result.Count);
+            Assert.False(response1.HasErrors);
+            Assert.Equal(1, response2.Result.Count);
+            Assert.False(response3.HasErrors);
+            Assert.Equal(2, response4.Result.Count);
         }
 
-        [Test]
+        [Fact]
         public void AssigningUnknownCategoryShouldBeHandled()
         {
             // Arrange
@@ -53,10 +52,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.AssignCategoryToProduct(productId, 666).Result;
 
             // Assert
-            Assert.IsTrue(response.HasErrors);
+            Assert.True(response.HasErrors);
         }
         
-        [Test]
+        [Fact]
         public void AssigningCategoryToUnknownProductShouldBeHandled()
         {
             // Arrange
@@ -65,10 +64,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.AssignCategoryToProduct(999999, 1).Result;
 
             // Assert
-            Assert.IsTrue(response.HasErrors);
+            Assert.True(response.HasErrors);
         }
 
-        [Test]
+        [Fact]
         public void AssigningCategoryToProductThatAlreadyHasCategoryShouldBeOk()
         {
             // Arrange
@@ -80,11 +79,11 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.AssignCategoryToProduct(productId, categories.Last()).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(categories.Count, Client.GetCategoriesForProduct(productId).Result.Result.Count);
+            Assert.False(response.HasErrors);
+            Assert.Equal(categories.Count, Client.GetCategoriesForProduct(productId).Result.Result.Count);
         }
 
-        [Test]
+        [Fact]
         public void UnassigningCategoryFromProductThatIsNotAssignedShouldBeOk()
         {
             // Arrange
@@ -96,8 +95,8 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UnAssignCategoryFromProduct(productId, 1).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(categories.Count, Client.GetCategoriesForProduct(productId).Result.Result.Count);
+            Assert.False(response.HasErrors);
+            Assert.Equal(categories.Count, Client.GetCategoriesForProduct(productId).Result.Result.Count);
         }
     }
 }

@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0-*",
+  "description": "An async C# Magento REST API client",
+  "authors": [ "Nick Van Eeckhout" ],
+  "tags": [ "Magento", "REST" ],
+  "projectUrl": "https://github.com/nickvane/Magento-RestApi",
+  "licenseUrl": "https://github.com/nickvane/Magento-RestApi/license.txt",
+  "iconUrl": "https://github.com/nickvane/Magento-RestApi/magento.restapi.icon.png",
+
+  "dependencies": {
+    "Newtonsoft.Json": "6.0.8",
+    "RestSharp": "105.1.0",
+    "HtmlAgilityPack": "1.4.9"
+  },
+
+  "frameworks": {
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0.0"
+      }
+    },
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0.0"
+      }
+    
+    }
+    //,"dnxcore50": {
+    //  "dependencies": {
+    //    "System.Collections": "4.0.10-beta-22816",
+    //    "System.Linq": "4.0.0-beta-22816",
+    //    "System.Threading": "4.0.10-beta-22816",
+    //    "Microsoft.CSharp": "4.0.0-beta-22816",
+    //    "System.Runtime": "4.0.0-beta-22816"
+    //  }
+    //}
+  }
+}

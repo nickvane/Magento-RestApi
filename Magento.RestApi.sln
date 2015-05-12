@@ -1,20 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magento.RestApi", "Magento.RestApi\Magento.RestApi.csproj", "{4B064292-5427-47F4-A444-D1AAC96E37FA}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Magento.RestApi", "Magento.RestApi\Magento.RestApi.xproj", "{D8E30801-C34C-4E9F-B2FD-A386F38E0E3F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D856637A-57FE-482C-BB00-6D4C904C3964}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Magento.RestApi.UnitTests", "Magento.RestApi.UnitTests\Magento.RestApi.UnitTests.xproj", "{52B45333-E775-4842-B797-9FD61BFC1C2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magento.RestApi.UnitTests", "Magento.RestApi.UnitTests\Magento.RestApi.UnitTests.csproj", "{9709FBDB-3BF3-4688-8141-91A542B8E44E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magento.RestApi.IntegrationTests", "Magento.RestApi.IntegrationTests\Magento.RestApi.IntegrationTests.csproj", "{C17C1E5A-4DFD-437F-A8B5-4647F981AD13}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Magento.RestApi.IntegrationTests", "Magento.RestApi.IntegrationTests\Magento.RestApi.IntegrationTests.xproj", "{C209C5DF-9CD9-4E19-A1BD-D4CDB4ADF276}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,18 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4B064292-5427-47F4-A444-D1AAC96E37FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B064292-5427-47F4-A444-D1AAC96E37FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B064292-5427-47F4-A444-D1AAC96E37FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B064292-5427-47F4-A444-D1AAC96E37FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9709FBDB-3BF3-4688-8141-91A542B8E44E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9709FBDB-3BF3-4688-8141-91A542B8E44E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9709FBDB-3BF3-4688-8141-91A542B8E44E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9709FBDB-3BF3-4688-8141-91A542B8E44E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C17C1E5A-4DFD-437F-A8B5-4647F981AD13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C17C1E5A-4DFD-437F-A8B5-4647F981AD13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C17C1E5A-4DFD-437F-A8B5-4647F981AD13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C17C1E5A-4DFD-437F-A8B5-4647F981AD13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8E30801-C34C-4E9F-B2FD-A386F38E0E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8E30801-C34C-4E9F-B2FD-A386F38E0E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8E30801-C34C-4E9F-B2FD-A386F38E0E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8E30801-C34C-4E9F-B2FD-A386F38E0E3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52B45333-E775-4842-B797-9FD61BFC1C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52B45333-E775-4842-B797-9FD61BFC1C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52B45333-E775-4842-B797-9FD61BFC1C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52B45333-E775-4842-B797-9FD61BFC1C2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C209C5DF-9CD9-4E19-A1BD-D4CDB4ADF276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C209C5DF-9CD9-4E19-A1BD-D4CDB4ADF276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C209C5DF-9CD9-4E19-A1BD-D4CDB4ADF276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C209C5DF-9CD9-4E19-A1BD-D4CDB4ADF276}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

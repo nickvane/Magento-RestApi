@@ -1,14 +1,13 @@
 ﻿using Magento.RestApi.Json;
 using Moq;
 using Newtonsoft.Json;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.UnitTests.Json
 {
-    [TestFixture]
     public class BoolConverterTests
     {
-        [Test]
+        [Fact]
         public void CanConvert()
         {
             // arrange
@@ -20,12 +19,12 @@ namespace Magento.RestApi.UnitTests.Json
             var result3 = converter.CanConvert("".GetType());
 
             // assert
-            Assert.IsTrue(result1);
-            Assert.IsTrue(result2);
-            Assert.IsFalse(result3);
+            Assert.True(result1);
+            Assert.True(result2);
+            Assert.False(result3);
         }
 
-        [Test]
+        [Fact]
         public void WritesCorrectly()
         {
             // arrange
@@ -48,7 +47,7 @@ namespace Magento.RestApi.UnitTests.Json
             writer3.Verify();
         }
 
-        [Test]
+        [Fact]
         public void ReadsCorrectly()
         {
             // arrange
@@ -68,10 +67,10 @@ namespace Magento.RestApi.UnitTests.Json
 
             // assert
             Assert.IsAssignableFrom<bool>(object1);
-            Assert.IsFalse((bool)object1);
-            Assert.IsNull(object2);
-            Assert.IsFalse((bool)object3);
-            Assert.IsTrue((bool)object4);
+            Assert.False((bool)object1);
+            Assert.Null(object2);
+            Assert.False((bool)object3);
+            Assert.True((bool)object4);
         }
     }
 }

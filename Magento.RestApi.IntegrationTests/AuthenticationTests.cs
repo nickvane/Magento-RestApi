@@ -1,11 +1,10 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    [TestFixture]
-    public class WhenAuthenticating : BaseTest
+    public class WhenAuthenticating : BaseFixture
     {
-        [Test]
+        [Fact]
         public void WithValidCredentialsShouldReturnAuthenticatedClient()
         {
             // Arrange
@@ -14,10 +13,10 @@ namespace Magento.RestApi.IntegrationTests
             var type = Client.GetType();
 
             // Assert
-            Assert.AreEqual(typeof(MagentoApi), type);
+            Assert.Equal(typeof(MagentoApi), type);
         }
 
-        [Test]
+        [Fact]
         public void WithInValidUrlShouldThrowException()
         {
             // Arrange
@@ -29,7 +28,7 @@ namespace Magento.RestApi.IntegrationTests
             Assert.Throws<MagentoApiException>(() => client.AuthenticateAdmin("y", "z"));
         }
 
-        [Test]
+        [Fact]
         public void WithInValidConsumerKeyShouldThrowException()
         {
             // Arrange
@@ -41,7 +40,7 @@ namespace Magento.RestApi.IntegrationTests
             Assert.Throws<MagentoApiException>(() => client.AuthenticateAdmin("y", "z"));
         }
 
-        [Test]
+        [Fact]
         public void WithInValidConsumerSecretShouldThrowException()
         {
             // Arrange
@@ -53,7 +52,7 @@ namespace Magento.RestApi.IntegrationTests
             Assert.Throws<MagentoApiException>(() => client.AuthenticateAdmin("y", "z"));
         }
 
-        [Test]
+        [Fact]
         public void WithInValidAdminUrlPartShouldThrowException()
         {
             // Arrange
@@ -65,7 +64,7 @@ namespace Magento.RestApi.IntegrationTests
             Assert.Throws<MagentoApiException>(() => client.AuthenticateAdmin("y", "z"));
         }
 
-        [Test]
+        [Fact]
         public void WithInValidUserNameShouldThrowException()
         {
             // Arrange
@@ -77,7 +76,7 @@ namespace Magento.RestApi.IntegrationTests
             Assert.Throws<MagentoApiException>(() => client.AuthenticateAdmin("y", "z"));
         }
 
-        [Test]
+        [Fact]
         public void WithInValidPasswordShouldThrowException()
         {
             // Arrange

@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    [TestFixture]
-    public class ThreadingTests : BaseTest
+    public class ThreadingTests : BaseFixture
     {
-        [Test]
+        [Fact]
         public void WhenUsingClientFromDifferentThreadsShouldDoEverythingSuccesfully()
         {
             var count = 0;
@@ -38,7 +37,7 @@ namespace Magento.RestApi.IntegrationTests
             Task.WaitAll(tasks);
 
             // Assert
-            Assert.AreEqual(50, count);
+            Assert.Equal(50, count);
         }
     }
 }

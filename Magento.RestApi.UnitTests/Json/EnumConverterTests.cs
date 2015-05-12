@@ -1,14 +1,13 @@
 ﻿using Magento.RestApi.Json;
 using Moq;
-using NUnit.Framework;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Magento.RestApi.UnitTests.Json
 {
-    [TestFixture]
     public class EnumConverterTests
     {
-        [Test]
+        [Fact]
         public void CanConvert()
         {
             // arrange
@@ -20,21 +19,21 @@ namespace Magento.RestApi.UnitTests.Json
             var result3 = converter.CanConvert("".GetType());
 
             // assert
-            Assert.IsTrue(result1);
-            Assert.IsTrue(result2);
-            Assert.IsFalse(result3);
+            Assert.True(result1);
+            Assert.True(result2);
+            Assert.False(result3);
         }
 
-        [Test]
+        [Fact]
         public void WritesCorrectly()
         {
             // arrange
             var converter = new EnumConverter();
-            var writer1 = new Moq.Mock<JsonWriter>();
+            var writer1 = new Mock<JsonWriter>();
             writer1.Setup(x => x.WriteValue(0)).Verifiable();
-            var writer2 = new Moq.Mock<JsonWriter>();
+            var writer2 = new Mock<JsonWriter>();
             writer2.Setup(x => x.WriteValue(1)).Verifiable();
-            var writer3 = new Moq.Mock<JsonWriter>();
+            var writer3 = new Mock<JsonWriter>();
             writer3.Setup(x => x.WriteValue(string.Empty)).Verifiable();
 
             // act
@@ -48,16 +47,16 @@ namespace Magento.RestApi.UnitTests.Json
             writer3.Verify();
         }
 
-        [Test]
+        [Fact]
         public void ReadsCorrectly()
         {
             // arrange
             var converter = new EnumConverter();
-            var reader1 = new Moq.Mock<JsonReader>();
+            var reader1 = new Mock<JsonReader>();
             reader1.SetupGet(x => x.Value).Returns(null);
-            var reader2 = new Moq.Mock<JsonReader>();
+            var reader2 = new Mock<JsonReader>();
             reader2.SetupGet(x => x.Value).Returns("0");
-            var reader3 = new Moq.Mock<JsonReader>();
+            var reader3 = new Mock<JsonReader>();
             reader3.SetupGet(x => x.Value).Returns("1");
 
             // act
@@ -67,10 +66,10 @@ namespace Magento.RestApi.UnitTests.Json
             var object4 = converter.ReadJson(reader3.Object, typeof(System.ConsoleColor), null, null);
 
             // assert
-            Assert.IsNull(object1);
-            Assert.IsNull(object2);
-            Assert.AreEqual(System.ConsoleColor.Black, (System.ConsoleColor)object3);
-            Assert.AreEqual(System.ConsoleColor.DarkBlue, (System.ConsoleColor)object4);
+            Assert.Null(object1);
+            Assert.Null(object2);
+            Assert.Equal(System.ConsoleColor.Black, (System.ConsoleColor)object3);
+            Assert.Equal(System.ConsoleColor.DarkBlue, (System.ConsoleColor)object4);
         }
     }
 }

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    [TestFixture]
-    public class ProductWebsiteTests : BaseTest
+    public class ProductWebsiteTests : BaseFixture
     {
         private string _validSku = "100000";
 
-        [Test]
+        [Fact]
         public void WhenAssigningWebsiteToProductShouldBeAssigned()
         {
             // Arrange
@@ -28,13 +27,13 @@ namespace Magento.RestApi.IntegrationTests
             var newProductForStore = Client.GetProductBySkuForStore(_validSku, 1).Result;
 
             // Assert
-            Assert.IsNotNull(product.Result);
-            Assert.IsNull(productForStore.Result);
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
-            Assert.IsNotNull(newProductForStore.Result);
+            Assert.NotNull(product.Result);
+            Assert.Null(productForStore.Result);
+            Assert.False(response.HasErrors, response.ErrorString);
+            Assert.NotNull(newProductForStore.Result);
         }
 
-        [Test]
+        [Fact]
         public void WhenAssigningInvalidWebsiteToProductShouldReturnError()
         {
             // Arrange
@@ -45,10 +44,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.AssignWebsiteToProduct(product.Result.entity_id, 999).Result;
 
             // Assert
-            Assert.IsTrue(response.HasErrors);
+            Assert.True(response.HasErrors);
         }
 
-        [Test]
+        [Fact]
         public void WhenUnAssigningInvalidWebsiteFromProductShouldReturnError()
         {
             // Arrange
@@ -58,10 +57,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UnassignWebsiteFromProduct(product.Result.entity_id, 999).Result;
 
             // Assert
-            Assert.IsTrue(response.HasErrors);
+            Assert.True(response.HasErrors);
         }
 
-        [Test]
+        [Fact]
         public void WhenAssigningWebsiteToInvalidProductShouldReturnError()
         {
             // Arrange
@@ -70,10 +69,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.AssignWebsiteToProduct(999999, 1).Result;
 
             // Assert
-            Assert.IsTrue(response.HasErrors);
+            Assert.True(response.HasErrors);
         }
 
-        [Test]
+        [Fact]
         public void WhenUnAssigningWebsiteFromInvalidProductShouldReturnError()
         {
             // Arrange
@@ -82,10 +81,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UnassignWebsiteFromProduct(999999, 1).Result;
 
             // Assert
-            Assert.IsTrue(response.HasErrors);
+            Assert.True(response.HasErrors);
         }
 
-        [Test]
+        [Fact]
         public void WhenAssigningWebsiteToProductThatIsAlreadyAssignedShouldBeOk()
         {
             // Arrange
@@ -95,11 +94,11 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.AssignWebsiteToProduct(product.Result.entity_id, 1).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
-            Assert.IsTrue(response.Result);
+            Assert.False(response.HasErrors);
+            Assert.True(response.Result);
         }
 
-        [Test]
+        [Fact]
         public void WhenUnAssigningWebsiteFromProductThatIsAlreadyUnAssignedShouldBeOk()
         {
             // Arrange
@@ -109,11 +108,11 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UnassignWebsiteFromProduct(product.Result.entity_id, 3).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
-            Assert.IsTrue(response.Result);
+            Assert.False(response.HasErrors);
+            Assert.True(response.Result);
         }
 
-        [Test]
+        [Fact]
         public void WhenGettingWebsitesFromProductShouldReturnIds()
         {
             // Arrange
@@ -123,10 +122,10 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetWebsitesForProduct(product.Result.entity_id).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors);
+            Assert.False(response.HasErrors);
             var websites = response.Result;
-            Assert.IsNotNull(websites);
-            Assert.AreEqual(2, websites.Count);
+            Assert.NotNull(websites);
+            Assert.Equal(2, websites.Count);
         }
     }
 }

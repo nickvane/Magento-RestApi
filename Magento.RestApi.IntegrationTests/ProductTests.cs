@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Magento.RestApi.Models;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    [TestFixture]
-    public class ProductTests : BaseTest
+    public class ProductTests : BaseFixture
     {
         private string _validSku = "100000";
 
-        [Test]
+        [Fact]
         public void WhenGettingProductWithValidIdShouldReturnProduct()
         {
             // Arrange
@@ -20,12 +19,12 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductById(1).Result;
 
             // Assert
-            Assert.IsNotNull(response.Result, response.ErrorString);
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(_validSku, response.Result.sku);
+            Assert.NotNull(response.Result);
+            Assert.False(response.HasErrors);
+            Assert.Equal(_validSku, response.Result.sku);
         }
 
-        [Test]
+        [Fact]
         public void WhenGettingProductWithInvalidIdShouldReturnNull()
         {
             // Arrange
@@ -34,12 +33,12 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductById(0).Result;
 
             // Assert
-            Assert.IsNull(response.Result, response.ErrorString);
-            Assert.IsTrue(response.HasErrors);
-            Assert.AreEqual("404", response.Errors.First().Code);
+            Assert.Null(response.Result);
+            Assert.True(response.HasErrors);
+            Assert.Equal("404", response.Errors.First().Code);
         }
 
-        [Test]
+        [Fact]
         public void WhenGettingProductWithValidskuShouldReturnProduct()
         {
             // Arrange
@@ -48,12 +47,12 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductBySku(_validSku).Result;
 
             // Assert
-            Assert.IsNotNull(response.Result, response.ErrorString);
-            Assert.IsFalse(response.HasErrors);
-            Assert.AreEqual(1, response.Result.entity_id);
+            Assert.NotNull(response.Result);
+            Assert.False(response.HasErrors);
+            Assert.Equal(1, response.Result.entity_id);
         }
 
-        [Test]
+        [Fact]
         public void WhenGettingProductWithInvalidSkuShouldReturnNull()
         {
             // Arrange
@@ -62,11 +61,11 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductBySku("000000").Result;
 
             // Assert
-            Assert.IsNull(response.Result);
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
+            Assert.Null(response.Result);
+            Assert.False(response.HasErrors, response.ErrorString);
         }
 
-        [Test]
+        [Fact]
         public void WhenAddingANewProductShouldBeSaved()
         {
             // Arrange
@@ -97,15 +96,15 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.CreateNewProduct(product).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
-            Assert.Less(0, response.Result);
+            Assert.False(response.HasErrors, response.ErrorString);
+            Assert.True(0 < response.Result);
             var newProduct = Client.GetProductBySku(sku).Result;
-            Assert.IsNotNull(newProduct.Result);
-            Assert.AreEqual(12.5, newProduct.Result.price);
-            Assert.IsFalse(newProduct.HasErrors);
+            Assert.NotNull(newProduct.Result);
+            Assert.Equal(12.5, newProduct.Result.price);
+            Assert.False(newProduct.HasErrors);
         }
 
-        [Test]
+        [Fact]
         public void CanUpdateProductWithPrice0()
         {
             // Arrange
@@ -116,13 +115,13 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UpdateProduct(product).Result;
             
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
-            Assert.IsTrue(response.Result);
+            Assert.False(response.HasErrors, response.ErrorString);
+            Assert.True(response.Result);
             var updatedProduct = Client.GetProductBySku(_validSku).Result.Result;
-            Assert.AreEqual(0, updatedProduct.price);
+            Assert.Equal(0, updatedProduct.price);
         }
 
-        [Test]
+        [Fact]
         public void WhenGettingProductsByCategoryShouldReturnProducts()
         {
             // Arrange
@@ -131,12 +130,12 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProductsByCategoryId(3).Result;
             
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
-            Assert.AreEqual(1, response.Result.Count);
-            Assert.AreEqual(_validSku, response.Result.First().sku);
+            Assert.False(response.HasErrors, response.ErrorString);
+            Assert.Equal(1, response.Result.Count);
+            Assert.Equal(_validSku, response.Result.First().sku);
         }
 
-        [Test]
+        [Fact]
         public void CanCreateAndUpdateFullProduct()
         {
             // Arrange
@@ -236,77 +235,77 @@ namespace Magento.RestApi.IntegrationTests
             var updatedProduct = Client.GetProductById(response1.Result).Result.Result;
 
             // assert
-            Assert.IsFalse(response1.HasErrors, response1.ErrorString);
-            Assert.Less(1, response1.Result);
-            Assert.IsFalse(response2.HasErrors, response1.ErrorString);
+            Assert.False(response1.HasErrors, response1.ErrorString);
+            Assert.True(1 < response1.Result);
+            Assert.False(response2.HasErrors, response1.ErrorString);
 
-            Assert.AreEqual(product.attribute_set_id, updatedProduct.attribute_set_id);
-            Assert.AreEqual(product.country_of_manufacture, updatedProduct.country_of_manufacture);
-            Assert.AreEqual(product.custom_design, updatedProduct.custom_design);
-            Assert.AreEqual(product.custom_design_from, updatedProduct.custom_design_from);
-            Assert.AreEqual(product.custom_design_to, updatedProduct.custom_design_to);
-            Assert.AreEqual(product.custom_layout_update, updatedProduct.custom_layout_update);
-            Assert.AreEqual(product.description, updatedProduct.description);
-            Assert.AreEqual(product.enable_googlecheckout, updatedProduct.enable_googlecheckout);
-            Assert.AreEqual(product.gift_message_available, updatedProduct.gift_message_available);
-            Assert.AreEqual(product.meta_description, updatedProduct.meta_description);
-            Assert.AreEqual(product.meta_keyword, updatedProduct.meta_keyword);
-            Assert.AreEqual(product.meta_title, updatedProduct.meta_title);
-            Assert.AreEqual(product.msrp, updatedProduct.msrp);
-            Assert.AreEqual(product.msrp_display_actual_price_type, updatedProduct.msrp_display_actual_price_type);
-            Assert.AreEqual(product.msrp_enabled, updatedProduct.msrp_enabled);
-            Assert.AreEqual(product.name + "2", updatedProduct.name);
-            Assert.AreEqual(product.news_from_date, updatedProduct.news_from_date);
-            Assert.AreEqual(product.news_to_date, updatedProduct.news_to_date);
-            Assert.AreEqual(product.options_container, updatedProduct.options_container);
-            Assert.AreEqual(product.page_layout, updatedProduct.page_layout);
-            Assert.AreEqual(product.price, updatedProduct.price);
-            Assert.AreEqual(product.short_description, updatedProduct.short_description);
-            Assert.AreEqual(product.sku, updatedProduct.sku);
-            Assert.AreEqual(product.special_from_date, updatedProduct.special_from_date);
-            Assert.AreEqual(product.special_price, updatedProduct.special_price);
-            Assert.AreEqual(product.special_to_date, updatedProduct.special_to_date);
-            Assert.AreEqual(product.status, updatedProduct.status);
-            Assert.AreEqual(product.tax_class_id, updatedProduct.tax_class_id);
-            Assert.AreEqual(product.type_id, updatedProduct.type_id);
-            Assert.AreEqual(product.url_key, updatedProduct.url_key);
-            Assert.AreEqual(product.visibility, updatedProduct.visibility);
-            Assert.AreEqual(product.weight, updatedProduct.weight);
+            Assert.Equal(product.attribute_set_id, updatedProduct.attribute_set_id);
+            Assert.Equal(product.country_of_manufacture, updatedProduct.country_of_manufacture);
+            Assert.Equal(product.custom_design, updatedProduct.custom_design);
+            Assert.Equal(product.custom_design_from, updatedProduct.custom_design_from);
+            Assert.Equal(product.custom_design_to, updatedProduct.custom_design_to);
+            Assert.Equal(product.custom_layout_update, updatedProduct.custom_layout_update);
+            Assert.Equal(product.description, updatedProduct.description);
+            Assert.Equal(product.enable_googlecheckout, updatedProduct.enable_googlecheckout);
+            Assert.Equal(product.gift_message_available, updatedProduct.gift_message_available);
+            Assert.Equal(product.meta_description, updatedProduct.meta_description);
+            Assert.Equal(product.meta_keyword, updatedProduct.meta_keyword);
+            Assert.Equal(product.meta_title, updatedProduct.meta_title);
+            Assert.Equal(product.msrp, updatedProduct.msrp);
+            Assert.Equal(product.msrp_display_actual_price_type, updatedProduct.msrp_display_actual_price_type);
+            Assert.Equal(product.msrp_enabled, updatedProduct.msrp_enabled);
+            Assert.Equal(product.name + "2", updatedProduct.name);
+            Assert.Equal(product.news_from_date, updatedProduct.news_from_date);
+            Assert.Equal(product.news_to_date, updatedProduct.news_to_date);
+            Assert.Equal(product.options_container, updatedProduct.options_container);
+            Assert.Equal(product.page_layout, updatedProduct.page_layout);
+            Assert.Equal(product.price, updatedProduct.price);
+            Assert.Equal(product.short_description, updatedProduct.short_description);
+            Assert.Equal(product.sku, updatedProduct.sku);
+            Assert.Equal(product.special_from_date, updatedProduct.special_from_date);
+            Assert.Equal(product.special_price, updatedProduct.special_price);
+            Assert.Equal(product.special_to_date, updatedProduct.special_to_date);
+            Assert.Equal(product.status, updatedProduct.status);
+            Assert.Equal(product.tax_class_id, updatedProduct.tax_class_id);
+            Assert.Equal(product.type_id, updatedProduct.type_id);
+            Assert.Equal(product.url_key, updatedProduct.url_key);
+            Assert.Equal(product.visibility, updatedProduct.visibility);
+            Assert.Equal(product.weight, updatedProduct.weight);
 
-            Assert.AreEqual(product.stock_data.backorders, updatedProduct.stock_data.backorders);
-            Assert.AreEqual(product.stock_data.enable_qty_increments, updatedProduct.stock_data.enable_qty_increments);
-            Assert.AreEqual(product.stock_data.is_decimal_divided, updatedProduct.stock_data.is_decimal_divided);
-            Assert.AreEqual(product.stock_data.is_in_stock, updatedProduct.stock_data.is_in_stock);
-            Assert.AreEqual(product.stock_data.is_qty_decimal, updatedProduct.stock_data.is_qty_decimal);
-            Assert.AreEqual(product.stock_data.manage_stock, updatedProduct.stock_data.manage_stock);
-            Assert.AreEqual(product.stock_data.max_sale_qty, updatedProduct.stock_data.max_sale_qty);
-            Assert.AreEqual(product.stock_data.min_qty, updatedProduct.stock_data.min_qty);
-            Assert.AreEqual(product.stock_data.min_sale_qty, updatedProduct.stock_data.min_sale_qty);
-            Assert.AreEqual(product.stock_data.notify_stock_qty, updatedProduct.stock_data.notify_stock_qty);
-            Assert.AreEqual(product.stock_data.qty, updatedProduct.stock_data.qty);
-            Assert.AreEqual(product.stock_data.qty_increments, updatedProduct.stock_data.qty_increments);
-            Assert.AreEqual(product.stock_data.use_config_backorders, updatedProduct.stock_data.use_config_backorders);
-            Assert.AreEqual(product.stock_data.use_config_enable_qty_inc, updatedProduct.stock_data.use_config_enable_qty_inc);
-            Assert.AreEqual(product.stock_data.use_config_manage_stock, updatedProduct.stock_data.use_config_manage_stock);
-            Assert.AreEqual(product.stock_data.use_config_max_sale_qty, updatedProduct.stock_data.use_config_max_sale_qty);
-            Assert.AreEqual(product.stock_data.use_config_min_qty, updatedProduct.stock_data.use_config_min_qty);
-            Assert.AreEqual(product.stock_data.use_config_min_sale_qty, updatedProduct.stock_data.use_config_min_sale_qty);
-            Assert.AreEqual(product.stock_data.use_config_notify_stock_qty, updatedProduct.stock_data.use_config_notify_stock_qty);
-            Assert.AreEqual(product.stock_data.use_config_qty_increments, updatedProduct.stock_data.use_config_qty_increments);
+            Assert.Equal(product.stock_data.backorders, updatedProduct.stock_data.backorders);
+            Assert.Equal(product.stock_data.enable_qty_increments, updatedProduct.stock_data.enable_qty_increments);
+            Assert.Equal(product.stock_data.is_decimal_divided, updatedProduct.stock_data.is_decimal_divided);
+            Assert.Equal(product.stock_data.is_in_stock, updatedProduct.stock_data.is_in_stock);
+            Assert.Equal(product.stock_data.is_qty_decimal, updatedProduct.stock_data.is_qty_decimal);
+            Assert.Equal(product.stock_data.manage_stock, updatedProduct.stock_data.manage_stock);
+            Assert.Equal(product.stock_data.max_sale_qty, updatedProduct.stock_data.max_sale_qty);
+            Assert.Equal(product.stock_data.min_qty, updatedProduct.stock_data.min_qty);
+            Assert.Equal(product.stock_data.min_sale_qty, updatedProduct.stock_data.min_sale_qty);
+            Assert.Equal(product.stock_data.notify_stock_qty, updatedProduct.stock_data.notify_stock_qty);
+            Assert.Equal(product.stock_data.qty, updatedProduct.stock_data.qty);
+            Assert.Equal(product.stock_data.qty_increments, updatedProduct.stock_data.qty_increments);
+            Assert.Equal(product.stock_data.use_config_backorders, updatedProduct.stock_data.use_config_backorders);
+            Assert.Equal(product.stock_data.use_config_enable_qty_inc, updatedProduct.stock_data.use_config_enable_qty_inc);
+            Assert.Equal(product.stock_data.use_config_manage_stock, updatedProduct.stock_data.use_config_manage_stock);
+            Assert.Equal(product.stock_data.use_config_max_sale_qty, updatedProduct.stock_data.use_config_max_sale_qty);
+            Assert.Equal(product.stock_data.use_config_min_qty, updatedProduct.stock_data.use_config_min_qty);
+            Assert.Equal(product.stock_data.use_config_min_sale_qty, updatedProduct.stock_data.use_config_min_sale_qty);
+            Assert.Equal(product.stock_data.use_config_notify_stock_qty, updatedProduct.stock_data.use_config_notify_stock_qty);
+            Assert.Equal(product.stock_data.use_config_qty_increments, updatedProduct.stock_data.use_config_qty_increments);
 
-            Assert.AreEqual(1, updatedProduct.group_price.Count);
-            Assert.AreEqual(product.group_price.First().cust_group, updatedProduct.group_price.First().cust_group);
-            Assert.AreEqual(product.group_price.First().price, updatedProduct.group_price.First().price);
-            Assert.AreEqual(product.group_price.First().website_id, updatedProduct.group_price.First().website_id);
+            Assert.Equal(1, updatedProduct.group_price.Count);
+            Assert.Equal(product.group_price.First().cust_group, updatedProduct.group_price.First().cust_group);
+            Assert.Equal(product.group_price.First().price, updatedProduct.group_price.First().price);
+            Assert.Equal(product.group_price.First().website_id, updatedProduct.group_price.First().website_id);
 
-            Assert.AreEqual(1, updatedProduct.tier_price.Count);
-            Assert.AreEqual(product.tier_price.First().cust_group, updatedProduct.tier_price.First().cust_group);
-            Assert.AreEqual(product.tier_price.First().price, updatedProduct.tier_price.First().price);
-            Assert.AreEqual(product.tier_price.First().website_id, updatedProduct.tier_price.First().website_id);
-            Assert.AreEqual(product.tier_price.First().price_qty, updatedProduct.tier_price.First().price_qty);
+            Assert.Equal(1, updatedProduct.tier_price.Count);
+            Assert.Equal(product.tier_price.First().cust_group, updatedProduct.tier_price.First().cust_group);
+            Assert.Equal(product.tier_price.First().price, updatedProduct.tier_price.First().price);
+            Assert.Equal(product.tier_price.First().website_id, updatedProduct.tier_price.First().website_id);
+            Assert.Equal(product.tier_price.First().price_qty, updatedProduct.tier_price.First().price_qty);
         }
 
-        [Test]
+        [Fact]
         public void WhenGettingProductsWithLikeFilterShouldReturnProducts()
         {
             // Arrange
@@ -319,8 +318,8 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.GetProducts(filter).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
-            Assert.AreEqual(1, response.Result.Count);
+            Assert.False(response.HasErrors, response.ErrorString);
+            Assert.Equal(1, response.Result.Count);
         }
     }
 }

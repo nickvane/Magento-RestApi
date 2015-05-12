@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using NUnit.Framework;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    public class BaseTest
+    public class BaseFixture : IDisposable
     {
         private readonly Dictionary<string, IMagentoApi> magentoApis = new Dictionary<string, IMagentoApi>();
         private readonly object _object = new object();
 
-        protected IMagentoApi Client { 
+        public IMagentoApi Client { 
             get { return InitializeClient(); }
         }
 
-        [TestFixtureSetUp]
-        public void Setup()
+        public BaseFixture()
         {
             Url = ConfigurationManager.AppSettings["url"];
             CustomAdminUrlPart = ConfigurationManager.AppSettings["adminurlpart"];
@@ -49,8 +47,7 @@ namespace Magento.RestApi.IntegrationTests
             }
         }
 
-        [TestFixtureTearDown]
-        public void TearDown()
+        public virtual void Dispose()
         {
             
         }

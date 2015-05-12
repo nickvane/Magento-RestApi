@@ -1,11 +1,10 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 
 namespace Magento.RestApi.UnitTests.Json
 {
-    [TestFixture]
     public class ProductConverterTests
     {
-        [Test]
+        [Fact]
         public void CanConvertFromJsonSuccesfully()
         {
             // arrange

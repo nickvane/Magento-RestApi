@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using Magento.RestApi.Core;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.UnitTests.Core
 {
-    [TestFixture]
     public class WhenConstructingIntProperty
     {
-        [Test]
+        [Fact]
         public void ForIntShouldHaveDefaults()
         {
             // arrange
@@ -17,12 +16,12 @@ namespace Magento.RestApi.UnitTests.Core
             property = new Property<int>();
 
             // assert
-            Assert.AreEqual(0, property.InitialValue);
-            Assert.AreEqual(0, property.Value);
-            Assert.IsFalse(property.HasChanged());
+            Assert.Equal(0, property.InitialValue);
+            Assert.Equal(0, property.Value);
+            Assert.False(property.HasChanged());
         }
 
-        [Test]
+        [Fact]
         public void ForStringShouldHaveDefaults()
         {
             // arrange
@@ -32,16 +31,15 @@ namespace Magento.RestApi.UnitTests.Core
             property = new Property<string>();
 
             // assert
-            Assert.IsNullOrEmpty(property.InitialValue);
-            Assert.IsNullOrEmpty(property.Value);
-            Assert.IsFalse(property.HasChanged());
+            Assert.Equal(null, property.InitialValue);
+            Assert.Equal(null, property.Value);
+            Assert.False(property.HasChanged());
         }
     }
-
-    [TestFixture]
+    
     public class WhenChangingValueOnIntProperty
     {
-        [Test]
+        [Fact]
         public void HasChangedShouldBeTrue()
         {
             // arrange
@@ -51,12 +49,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value = 1;
 
             // assert
-            Assert.IsTrue(property.HasChanged());
-            Assert.AreEqual(0, property.InitialValue);
-            Assert.AreEqual(1, property.Value);
+            Assert.True(property.HasChanged());
+            Assert.Equal(0, property.InitialValue);
+            Assert.Equal(1, property.Value);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeFalseAfterInitialValueIsSet()
         {
             // arrange
@@ -67,12 +65,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.SetValueAsInitial();
 
             // assert
-            Assert.IsFalse(property.HasChanged());
-            Assert.AreEqual(1, property.InitialValue);
-            Assert.AreEqual(1, property.Value);
+            Assert.False(property.HasChanged());
+            Assert.Equal(1, property.InitialValue);
+            Assert.Equal(1, property.Value);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeTrueAfterInitialValueIsSetAndChanged()
         {
             // arrange
@@ -84,16 +82,15 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value = 2;
 
             // assert
-            Assert.IsTrue(property.HasChanged());
-            Assert.AreEqual(1, property.InitialValue);
-            Assert.AreEqual(2, property.Value);
+            Assert.True(property.HasChanged());
+            Assert.Equal(1, property.InitialValue);
+            Assert.Equal(2, property.Value);
         }
     }
-
-    [TestFixture]
+    
     public class WhenChangingValueOnListProperty
     {
-        [Test]
+        [Fact]
         public void HasChangedShouldBeTrue()
         {
             // arrange
@@ -103,12 +100,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value = new List<int>();
 
             // assert
-            Assert.IsTrue(property.HasChanged());
-            Assert.IsNull(property.InitialValue);
-            Assert.AreEqual(0, property.Value.Count);
+            Assert.True(property.HasChanged());
+            Assert.Null(property.InitialValue);
+            Assert.Equal(0, property.Value.Count);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeFalseAfterInitialValueIsSet()
         {
             // arrange
@@ -119,12 +116,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.SetValueAsInitial();
 
             // assert
-            Assert.IsFalse(property.HasChanged());
-            Assert.AreEqual(0, property.InitialValue.Count);
-            Assert.AreEqual(0, property.Value.Count);
+            Assert.False(property.HasChanged());
+            Assert.Equal(0, property.InitialValue.Count);
+            Assert.Equal(0, property.Value.Count);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeTrueAfterInitialValueIsSetAndChanged()
         {
             // arrange
@@ -136,12 +133,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value = new List<int>{1};
 
             // assert
-            Assert.IsTrue(property.HasChanged());
-            Assert.AreEqual(0, property.InitialValue.Count);
-            Assert.AreEqual(1, property.Value.Count);
+            Assert.True(property.HasChanged());
+            Assert.Equal(0, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeFalseAfterInitialValueIsSetAndSameItemIsAdded()
         {
             // arrange
@@ -153,12 +150,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value = new List<int> { 1 };
 
             // assert
-            Assert.IsFalse(property.HasChanged());
-            Assert.AreEqual(1, property.InitialValue.Count);
-            Assert.AreEqual(1, property.Value.Count);
+            Assert.False(property.HasChanged());
+            Assert.Equal(1, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeTrueAfterInitialValueIsSetAndOtherItemIsAdded()
         {
             // arrange
@@ -170,12 +167,12 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value = new List<int> { 2 };
 
             // assert
-            Assert.IsTrue(property.HasChanged());
-            Assert.AreEqual(1, property.InitialValue.Count);
-            Assert.AreEqual(1, property.Value.Count);
+            Assert.True(property.HasChanged());
+            Assert.Equal(1, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
         }
 
-        [Test]
+        [Fact]
         public void HasChangedShouldBeTrueAfterInitialValueIsSetAndItemIsChanged()
         {
             // arrange
@@ -187,30 +184,11 @@ namespace Magento.RestApi.UnitTests.Core
             property.Value[0] = 2;
 
             // assert
-            Assert.IsTrue(property.HasChanged());
-            Assert.AreEqual(1, property.InitialValue.Count);
-            Assert.AreEqual(1, property.InitialValue[0]);
-            Assert.AreEqual(1, property.Value.Count);
-            Assert.AreEqual(2, property.Value[0]);
+            Assert.True(property.HasChanged());
+            Assert.Equal(1, property.InitialValue.Count);
+            Assert.Equal(1, property.InitialValue[0]);
+            Assert.Equal(1, property.Value.Count);
+            Assert.Equal(2, property.Value[0]);
         }
     }
-
-    //[TestFixture]
-    //public class WhenConstructingListWithIChangeTrackingProperty
-    //{
-    //    [Test]
-    //    public void ShouldCheckHasChanged()
-    //    {
-    //        // arrange
-    //        var property = new Property<List<ChangeTrackingTest>>();
-
-    //        // act
-    //        property = new Property<ChangeTrackingTest>();
-
-    //        // assert
-    //        Assert.IsNull(property.InitialValue);
-    //        Assert.IsNull(property.Value);
-    //        Assert.IsFalse(property.HasChanged());
-    //    }
-    //}
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 using Magento.RestApi.Models;
-using NUnit.Framework;
+using Xunit;
 
 namespace Magento.RestApi.IntegrationTests
 {
-    [TestFixture]
-    public class ProductInventoryTests : BaseTest
+    public class ProductInventoryTests : BaseFixture
     {
-        [Test]
+        [Fact]
         public void WhenUpdatingStockQuantityByIdShouldBeCorrect()
         {
             // Arrange
@@ -19,11 +18,11 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UpdateStockQuantityForProduct(productId, quantity).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
+            Assert.False(response.HasErrors, response.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
-            Assert.AreEqual(quantity, updatedProduct.Result.stock_data.qty);
+            Assert.Equal(quantity, updatedProduct.Result.stock_data.qty);
         }
-        [Test]
+        [Fact]
         public void WhenUpdatingStockQuantityWith0ShouldBeCorrect()
         {
             // Arrange
@@ -35,12 +34,12 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UpdateStockQuantityForProduct(productId, quantity).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
+            Assert.False(response.HasErrors, response.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
-            Assert.AreEqual(quantity, updatedProduct.Result.stock_data.qty);
+            Assert.Equal(quantity, updatedProduct.Result.stock_data.qty);
         }
 
-        [Test]
+        [Fact]
         public void WhenUpdatingStockItemByIdShouldBeCorrect()
         {
             // Arrange
@@ -58,13 +57,13 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UpdateStockItemForProduct(productId, stockItem).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
+            Assert.False(response.HasErrors, response.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
-            Assert.AreEqual(quantity, updatedProduct.Result.stock_data.qty);
-            Assert.AreEqual(isInStock, updatedProduct.Result.stock_data.is_in_stock);
+            Assert.Equal(quantity, updatedProduct.Result.stock_data.qty);
+            Assert.Equal(isInStock, updatedProduct.Result.stock_data.is_in_stock);
         }
 
-        [Test]
+        [Fact]
         public void WhenUpdatingFullStockItemShouldBeCorrect()
         {
             // Arrange
@@ -123,32 +122,32 @@ namespace Magento.RestApi.IntegrationTests
             var response = Client.UpdateStockItemForProduct(productId, stockItem).Result;
 
             // Assert
-            Assert.IsFalse(response.HasErrors, response.ErrorString);
+            Assert.False(response.HasErrors, response.ErrorString);
             var updatedStockitem = Client.GetStockItemForProduct(productId).Result.Result;
-            Assert.AreEqual(backorders, updatedStockitem.backorders);
-            Assert.AreEqual(enable_qty_increments, updatedStockitem.enable_qty_increments);
-            Assert.AreEqual(is_decimal_divided, updatedStockitem.is_decimal_divided);
-            Assert.AreEqual(is_qty_decimal, updatedStockitem.is_qty_decimal);
-            Assert.AreEqual(manage_stock, updatedStockitem.manage_stock);
-            Assert.AreEqual(max_sale_qty, updatedStockitem.max_sale_qty);
-            Assert.AreEqual(min_qty, updatedStockitem.min_qty);
-            Assert.AreEqual(min_sale_qty, updatedStockitem.min_sale_qty);
-            Assert.AreEqual(notify_stock_qty, updatedStockitem.notify_stock_qty);
-            Assert.AreEqual(qty_increments, updatedStockitem.qty_increments);
-            //Assert.AreEqual(stock_status_changed_auto, updatedStockitem.stock_status_changed_auto);
-            Assert.AreEqual(use_config_backorders, updatedStockitem.use_config_backorders);
-            Assert.AreEqual(use_config_enable_qty_inc, updatedStockitem.use_config_enable_qty_inc);
-            Assert.AreEqual(use_config_manage_stock, updatedStockitem.use_config_manage_stock);
-            Assert.AreEqual(use_config_max_sale_qty, updatedStockitem.use_config_max_sale_qty);
-            Assert.AreEqual(use_config_min_qty, updatedStockitem.use_config_min_qty);
-            Assert.AreEqual(use_config_min_sale_qty, updatedStockitem.use_config_min_sale_qty);
-            Assert.AreEqual(use_config_notify_stock_qty, updatedStockitem.use_config_notify_stock_qty);
-            Assert.AreEqual(use_config_qty_increments, updatedStockitem.use_config_qty_increments);
+            Assert.Equal(backorders, updatedStockitem.backorders);
+            Assert.Equal(enable_qty_increments, updatedStockitem.enable_qty_increments);
+            Assert.Equal(is_decimal_divided, updatedStockitem.is_decimal_divided);
+            Assert.Equal(is_qty_decimal, updatedStockitem.is_qty_decimal);
+            Assert.Equal(manage_stock, updatedStockitem.manage_stock);
+            Assert.Equal(max_sale_qty, updatedStockitem.max_sale_qty);
+            Assert.Equal(min_qty, updatedStockitem.min_qty);
+            Assert.Equal(min_sale_qty, updatedStockitem.min_sale_qty);
+            Assert.Equal(notify_stock_qty, updatedStockitem.notify_stock_qty);
+            Assert.Equal(qty_increments, updatedStockitem.qty_increments);
+            //Assert.Equal(stock_status_changed_auto, updatedStockitem.stock_status_changed_auto);
+            Assert.Equal(use_config_backorders, updatedStockitem.use_config_backorders);
+            Assert.Equal(use_config_enable_qty_inc, updatedStockitem.use_config_enable_qty_inc);
+            Assert.Equal(use_config_manage_stock, updatedStockitem.use_config_manage_stock);
+            Assert.Equal(use_config_max_sale_qty, updatedStockitem.use_config_max_sale_qty);
+            Assert.Equal(use_config_min_qty, updatedStockitem.use_config_min_qty);
+            Assert.Equal(use_config_min_sale_qty, updatedStockitem.use_config_min_sale_qty);
+            Assert.Equal(use_config_notify_stock_qty, updatedStockitem.use_config_notify_stock_qty);
+            Assert.Equal(use_config_qty_increments, updatedStockitem.use_config_qty_increments);
             
-            Assert.AreEqual(is_in_stock, updatedStockitem.is_in_stock);
+            Assert.Equal(is_in_stock, updatedStockitem.is_in_stock);
         }
 
-        [Test]
+        [Fact]
         public void WhenManagingStockShouldUpdate()
         {
             // Arrange
@@ -172,9 +171,9 @@ namespace Magento.RestApi.IntegrationTests
             var response2 = Client.UpdateStockItemForProduct(productId, updatedStockItem).Result;
             
             // Assert
-            Assert.IsFalse(response2.HasErrors, response2.ErrorString);
+            Assert.False(response2.HasErrors, response2.ErrorString);
             var updatedProduct = Client.GetProductById(productId).Result;
-            Assert.IsTrue(updatedProduct.Result.stock_data.is_in_stock.Value);
+            Assert.True(updatedProduct.Result.stock_data.is_in_stock.Value);
         }
     }
 }
