@@ -94,15 +94,13 @@ Following Magento REST API features are currently implemented:
 	* Product Websites
 * Customers
 * Customer Addresses 
-* Orders (contains order items and addresses)
+* Orders
+	* Order Comments
+	* Order Addresses
+	* Order Items
 
 For the supported features and usage of the library take a look at the integration tests.
 
-Todo features:
-
-* Order Comments
-* Order Addresses
-* Order Items
 
 ### More info
 
