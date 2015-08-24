@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
-using RestSharp.Contrib;
+using RestSharp.Extensions.MonoHttp;
 using JsonSerializer = Magento.RestApi.Json.JsonSerializer;
 
 namespace Magento.RestApi

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1-*",
+  "version": "1.0.2-*",
   "title": "Magento REST API client",
   "description": "An async C# Magento REST API client",
   "authors": [ "Nick Van Eeckhout" ],
@@ -9,8 +9,8 @@
   "iconUrl": "https://raw.githubusercontent.com/nickvane/Magento-RestApi/master/magento.restapi.icon.png",
 
   "dependencies": {
-    "Newtonsoft.Json": "6.0.8",
-    "RestSharp": "105.1.0",
+    "Newtonsoft.Json": "7.0.1",
+    "RestSharp": "105.2.2",
     "HtmlAgilityPack": "1.4.9"
   },
 
