@@ -20,12 +20,12 @@ namespace Magento.RestApi.IntegrationTests
                 .AddJsonFile("config.json");
             var configuration = configurationBuilder.Build();
 
-            Url = configuration.Get("url");
-            CustomAdminUrlPart = configuration.Get("adminurlpart");
-            ConsumerKey = configuration.Get("consumerkey");
-            ConsumerSecret = configuration.Get("consumersecret");
-            UserName = configuration.Get("username");
-            Password = configuration.Get("password");
+            Url = configuration["url"];
+            CustomAdminUrlPart = configuration["adminurlpart"];
+            ConsumerKey = configuration["consumerkey"];
+            ConsumerSecret = configuration["consumersecret"];
+            UserName = configuration["username"];
+            Password = configuration["password"];
         }
 
         protected string Url { get; set; }
