@@ -34,6 +34,13 @@ namespace Magento.RestApi
         /// <returns>this, for fluent configuration</returns>
         IMagentoApi SetCustomAdminUrlPart(string adminUrlPart);
         /// <summary>
+        /// For oauth to work, we need to provide a callback url. We are not going to use it though.
+        /// default: http://localhost:8888. If this needs to change you can do it here.
+        /// </summary>
+        /// <param name="callbackUrl"></param>
+        /// <returns></returns>
+        IMagentoApi SetCallbackUrl(string callbackUrl);
+        /// <summary>
         /// This gets the access token and secret without opening a browser to let the user log in.
         /// This is primarely used for backend applications such as windows services where you can't let the user show a browser window.
         /// </summary>

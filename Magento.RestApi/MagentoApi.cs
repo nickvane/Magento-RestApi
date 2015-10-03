@@ -27,6 +27,7 @@ namespace Magento.RestApi
         private string _accessTokenKey;
         private string _accessTokenSecret;
         private string _adminUrlPart = "admin";
+        private string _callbackUrl = "http://localhost:8888";
         private string _userName;
         private string _password;
         private bool _hasAuthenticatedWithAdminAuthentication;
@@ -119,6 +120,18 @@ namespace Magento.RestApi
         }
 
         /// <summary>
+        /// For oauth to work, we need to provide a callback url. We are not going to use it though.
+        /// default: http://localhost:8888. If this needs to change you can do it here.
+        /// </summary>
+        /// <param name="callbackUrl"></param>
+        /// <returns></returns>
+        public IMagentoApi SetCallbackUrl(string callbackUrl)
+        {
+            if (!string.IsNullOrEmpty(callbackUrl)) _callbackUrl = callbackUrl;
+            return this;
+        }
+
+        /// <summary>
         /// This gets the access token and secret without opening a browser to let the user log in.
         /// This is primarely used for backend applications such as windows services where you can't let the user show a browser window.
         /// </summary>
@@ -141,7 +154,7 @@ namespace Magento.RestApi
                     _client.Authenticator = OAuth1Authenticator.ForRequestToken(
                         _consumerKey,
                         _consumerSecret,
-                        "http://localhost:8888" // Value for the oauth_callback parameter, we provide a value, but it won't be used.
+                        _callbackUrl // Value for the oauth_callback parameter, we provide a value, but it won't be used.
                         );
 
                     // PART 1: Getting an Unauthorized Request Token

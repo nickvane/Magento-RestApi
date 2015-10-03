@@ -26,6 +26,15 @@ var client = new MagentoApi()
     .AuthenticateAdmin("UserName", "Password");
 ```
 
+If you need to change the oauth callback url:
+
+```csharp
+var client = new MagentoApi()
+    .SetCallbackUrl("https://domainname.com:88")
+    .Initialize("http://www.yourmagentourl.com", "ConsumerKey", "ConsumerSecret")
+    .AuthenticateAdmin("UserName", "Password");
+```
+
 The client can be used with a user that isn't an admin, but the oauth credentials will have to be provided to the client. And not all of the methods will work with a user that isn't an admin.
 
 ```csharp

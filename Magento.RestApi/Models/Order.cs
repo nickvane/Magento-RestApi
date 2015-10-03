@@ -380,7 +380,7 @@ namespace Magento.RestApi.Models
 		/// <summary>
         /// 
         /// </summary>
-        public int increment_id
+        public string increment_id
         {
             get { return GetValue(x => x.increment_id); }
             set { SetValue(x => x.increment_id, value); }

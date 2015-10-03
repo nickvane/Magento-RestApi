@@ -12,7 +12,7 @@ namespace Magento.RestApi.Models
         /// <summary>
         /// 
         /// </summary>
-        public int is_customer_notified
+        public int? is_customer_notified
         {
             get { return GetValue(x => x.is_customer_notified); }
             set { SetValue(x => x.is_customer_notified, value); }
@@ -21,7 +21,7 @@ namespace Magento.RestApi.Models
         /// 
         /// </summary>
         [JsonConverter(typeof(BoolConverter))]
-        public bool is_visible_on_front
+        public bool? is_visible_on_front
         {
             get { return GetValue(x => x.is_visible_on_front); }
             set { SetValue(x => x.is_visible_on_front, value); }
