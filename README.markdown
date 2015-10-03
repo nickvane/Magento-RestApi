@@ -4,7 +4,7 @@
 
 The client is specifically targeted to be used in background processes. Magento REST API uses 3-legged OAuth 1.0a protocol to authenticate the application to access the Magento service. Because it is not very useful to pop up browser windows from a background process (like a windows service) for the user to enter username and password, the client has an authentication method that simulates the login process without opening browser windows.
 
-[Available from nuget: Magento.RestApi](https://www.nuget.org/packages/Magento.RestApi/1.0.2) (updated to 1.0.2 on 24/08/2015)
+[Available from nuget: Magento.RestApi](https://www.nuget.org/packages/Magento.RestApi/1.0.3) (updated to 1.0.3 on 03/10/2015)
 
 ### Usage
 #### Authentication
