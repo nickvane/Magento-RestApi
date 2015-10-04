@@ -1331,6 +1331,7 @@ namespace Magento.RestApi
             if (address.entity_id != 0) throw new MagentoApiException("A new address can't have an entity_id.");
 
             var request = CreateRequest("/api/rest/customers/{customerId}/addresses", Method.POST);
+            request.AddParameter("customerId", customerId, ParameterType.UrlSegment);
             request.AddBody(address);
 
             var response = await Execute(request);
