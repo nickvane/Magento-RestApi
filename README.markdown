@@ -45,6 +45,12 @@ var client = new MagentoApi()
 
 *If you have trouble authenticating, you can read the wiki page [authentication steps](https://github.com/nickvane/Magento-RestApi/wiki/Authentication-steps) for more information about the different steps in the authentication process. You can then compare the steps from the page with your own requests you see in [Fiddler](http://fiddler2.com).*
 
+If you are having trouble authenticating to an SSL-secured Magento instance, one failure reason may be the security policy setup on the web server. Many web servers may block SSLv3 because of vulnerabilities like POODLE. However, .NET defaults the `System.Net.ServicePointManager.SecurityProtocol` to be `System.Net.SecurityProtocolType.Ssl3`. To fix this, simply set your application's default to a matching protocol type for your web server instance. For instance, for web servers that require TLSv1.2 for the latest security recommendations, you would set your policy before your authentication call like:
+
+```csharp
+System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+```
+
 #### Client calls
 
 The client can then be used like this:
