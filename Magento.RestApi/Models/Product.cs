@@ -281,7 +281,7 @@ namespace Magento.RestApi.Models
         /// Product tax class. Can have the following values: 0 - None, 2 - taxable Goods, 4 - Shipping, etc., depending on created tax classes.
         /// </summary>
         /// <remarks>required</remarks>
-        public int tax_class_id
+        public int? tax_class_id
         {
             get { return GetValue(x => x.tax_class_id); }
             set { SetValue(x => x.tax_class_id, value); }
