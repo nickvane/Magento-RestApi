@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Magento.RestApi.Core;
 using Magento.RestApi.Json;
 using Newtonsoft.Json;
@@ -156,6 +157,15 @@ namespace Magento.RestApi.Models
         {
             get { return GetValue(x => x.created_in); }
             set { SetValue(x => x.created_in, value); }
+        }
+        
+        /// <summary>
+        /// A dictionary of all specified attributes
+        /// </summary>
+        public Dictionary<string, string> Attributes
+        {
+            get { return GetValue(x => x.Attributes); }
+            set { SetValue(x => x.Attributes, value); }
         }
     }
 }
