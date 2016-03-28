@@ -48,6 +48,15 @@ namespace Magento.RestApi
                 return _client;
             }
         }
+        
+        /// <summary>
+        /// allow read access to token key for later calls
+        /// </summary>
+        public String AccessTokenKey => this._accessTokenKey;
+        /// <summary>
+        /// allow read access to token secret for later calls
+        /// </summary>
+        public String AccessTokenSecret => this._accessTokenSecret;
 
         /// <summary>
         /// Initializes the client, setting url, consumerkey and consumersecret and adding default request headers and handlers
