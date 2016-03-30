@@ -560,11 +560,36 @@ namespace Magento.RestApi
         protected void AddFilterToRequest(Filter filter, IRestRequest request)
         {
             if (filter == null) return;
+            var inExpressions = new Dictionary<string, ISet<string>>();
             var index = 0;
             foreach (var expression in filter.FilterExpressions)
             {
+                if (expression.ExpressionOperator == ExpressionOperator.@in)
+                {
+                    ISet<string> values;
+                    if (!inExpressions.TryGetValue(expression.FieldName, out values))
+                    {
+                        values = new HashSet<string>();
+                        inExpressions[expression.FieldName] = values;
+                    }
+                    values.Add(expression.FieldValue);
+                    continue;
+                }
+
                 request.AddParameter("filter[" + index + "][attribute]", expression.FieldName);
                 request.AddParameter("filter[" + index + "][" + expression.ExpressionOperator + "]", expression.FieldValue);
+                index++;
+            }
+            foreach (var expression in inExpressions)
+            {
+                request.AddParameter("filter[" + index + "][attribute]", expression.Key);
+
+                var valueIndex = 0;
+                foreach (var value in expression.Value)
+                {
+                    request.AddParameter("filter[" + index + "][" + ExpressionOperator.@in + "][" + valueIndex + "]", value);
+                    valueIndex++;
+                }
                 index++;
             }
             if (filter.Page > 1) request.AddParameter("page", filter.Page);
