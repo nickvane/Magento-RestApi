@@ -35,6 +35,7 @@ namespace Magento.RestApi
     
         private JsonSerializer _jsonSerializer;
         private RestClient _client;
+        private object _lock = new object();
 
         private RestClient Client
         {
@@ -149,7 +150,7 @@ namespace Magento.RestApi
         /// <returns>this, for fluent configuration</returns>
         public IMagentoApi AuthenticateAdmin(string userName, string password)
         {
-            lock (_client)
+            lock (_lock)
             {
                 try
                 {
