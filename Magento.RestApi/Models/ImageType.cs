@@ -16,6 +16,10 @@
         /// <summary>
         /// 
         /// </summary>
-        thumbnail
+        thumbnail,
+        /// <summary>
+        /// This is not a standard Magento image type. Do not use it if you don't have this type available in your Magento installation.
+        /// </summary>
+        rotator_image
     }
 }

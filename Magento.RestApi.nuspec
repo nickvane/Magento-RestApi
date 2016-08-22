@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Magento.RestApi</id>
+    <version>1.0.4.0</version>
+    <title>Magento REST API client </title>
+    <authors>Nick Van Eeckhout</authors>
+    <licenseUrl>https://raw.githubusercontent.com/nickvane/Magento-RestApi/master/license.txt</licenseUrl>
+    <projectUrl>https://github.com/nickvane/Magento-RestApi</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/nickvane/Magento-RestApi/master/magento.restapi.icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An async C# Magento REST API client</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>Magento REST</tags>
+    <dependencies>
+      <dependency id="HtmlAgilityPack" version="1.4.9.5" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="RestSharp" version="105.2.3" />
+    </dependencies> 
+  </metadata>
+  <files>
+    <file src="Magento.RestApi\bin\Release\Magento.RestApi.dll" target="lib\net40" />
+  </files>
+</package>

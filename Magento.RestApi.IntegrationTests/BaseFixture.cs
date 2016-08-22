@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
-using Microsoft.Framework.Configuration;
 
 namespace Magento.RestApi.IntegrationTests
 {
@@ -15,17 +15,14 @@ namespace Magento.RestApi.IntegrationTests
 
         public BaseFixture()
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                // change to full path to make this work
-                .AddJsonFile("config.json");
-            var configuration = configurationBuilder.Build();
+            var reader = new AppSettingsReader();
 
-            Url = configuration["url"];
-            CustomAdminUrlPart = configuration["adminurlpart"];
-            ConsumerKey = configuration["consumerkey"];
-            ConsumerSecret = configuration["consumersecret"];
-            UserName = configuration["username"];
-            Password = configuration["password"];
+            Url = reader.GetValue("url", typeof(string)).ToString();
+            CustomAdminUrlPart = reader.GetValue("adminurlpart", typeof(string)).ToString();
+            ConsumerKey = reader.GetValue("consumerkey", typeof(string)).ToString();
+            ConsumerSecret = reader.GetValue("consumersecret", typeof(string)).ToString();
+            UserName = reader.GetValue("username", typeof(string)).ToString();
+            Password = reader.GetValue("password", typeof(string)).ToString();
         }
 
         protected string Url { get; set; }

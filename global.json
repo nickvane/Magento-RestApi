@@ -1,3 +1,0 @@
-{
-    "sources": ["Magento.RestApi", "Magento.RestApi.IntegrationTests", "Magento.RestApi.UnitTests"]
-}

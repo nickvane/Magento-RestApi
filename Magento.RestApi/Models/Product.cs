@@ -23,6 +23,7 @@ namespace Magento.RestApi.Models
 
         public override void StartTracking()
         {
+            Attributes = new Dictionary<string, string>();
             base.StartTracking();
             if (group_price != null)
             {
@@ -39,36 +40,6 @@ namespace Magento.RestApi.Models
                 }
             }
             if (stock_data != null) stock_data.StartTracking();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public override bool HasChanged()
-        {
-            var hasChanged = base.HasChanged();
-            
-            if (!hasChanged)
-            {
-                var attributes = GetProperty(p => p.Attributes);
-                foreach (var attribute in attributes.Value)
-                {
-                    if (!attributes.InitialValue.ContainsKey(attribute.Key))
-                    {
-                        hasChanged = true;
-                    }
-                    else
-                    {
-                        if (attribute.Value != attributes.InitialValue[attribute.Key])
-                        {
-                            hasChanged = true;
-                        }
-                    }
-                }
-            }
-
-            return hasChanged;
         }
 
         /// <summary>

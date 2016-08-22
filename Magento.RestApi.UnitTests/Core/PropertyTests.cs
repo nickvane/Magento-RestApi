@@ -191,4 +191,121 @@ namespace Magento.RestApi.UnitTests.Core
             Assert.Equal(2, property.Value[0]);
         }
     }
+
+    public class WhenChangingValueOnDictionaryProperty
+    {
+        [Fact]
+        public void HasChangedShouldBeTrue()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+
+            // act
+            property.Value = new Dictionary<string, string>();
+
+            // assert
+            Assert.True(property.HasChanged());
+            Assert.Null(property.InitialValue);
+            Assert.Equal(0, property.Value.Count);
+        }
+
+        [Fact]
+        public void HasChangedShouldBeFalseAfterInitialValueIsSet()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+
+            // act
+            property.Value = new Dictionary<string, string>();
+            property.SetValueAsInitial();
+
+            // assert
+            Assert.False(property.HasChanged());
+            Assert.Equal(0, property.InitialValue.Count);
+            Assert.Equal(0, property.Value.Count);
+        }
+
+        [Fact]
+        public void HasChangedShouldBeFalseAfterSetToNull()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+            property.Value = new Dictionary<string, string>();
+            property.SetValueAsInitial();
+
+            // act
+            property.Value = null;
+
+            // assert
+            Assert.False(property.HasChanged());
+        }
+
+        [Fact]
+        public void HasChangedShouldBeTrueAfterInitialValueIsSetAndChanged()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+
+            // act
+            property.Value = new Dictionary<string, string>();
+            property.SetValueAsInitial();
+            property.Value = new Dictionary<string, string> { {"key", "value"} };
+
+            // assert
+            Assert.True(property.HasChanged());
+            Assert.Equal(0, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
+        }
+
+        [Fact]
+        public void HasChangedShouldBeFalseAfterInitialValueIsSetAndSameItemIsAdded()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+
+            // act
+            property.Value = new Dictionary<string, string> { { "key", "value" } };
+            property.SetValueAsInitial();
+            property.Value = new Dictionary<string, string> { { "key", "value" } };
+
+            // assert
+            Assert.False(property.HasChanged());
+            Assert.Equal(1, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
+        }
+
+        [Fact]
+        public void HasChangedShouldBeTrueAfterInitialValueIsSetAndOtherItemIsAdded()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+
+            // act
+            property.Value = new Dictionary<string, string> { { "key", "value" } };
+            property.SetValueAsInitial();
+            property.Value = new Dictionary<string, string> { { "another_key", "value" } };
+
+            // assert
+            Assert.True(property.HasChanged());
+            Assert.Equal(1, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
+        }
+
+        [Fact]
+        public void HasChangedShouldBeTrueAfterInitialValueIsSetAndItemIsChanged()
+        {
+            // arrange
+            var property = new Property<Dictionary<string, string>>();
+
+            // act
+            property.Value = new Dictionary<string, string> { { "key", "value" } };
+            property.SetValueAsInitial();
+            property.Value["key"] = "another_value";
+
+            // assert
+            Assert.True(property.HasChanged());
+            Assert.Equal(1, property.InitialValue.Count);
+            Assert.Equal(1, property.Value.Count);
+        }
+    }
 }

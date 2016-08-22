@@ -24,24 +24,24 @@ namespace Magento.RestApi
         private string _url;
         private string _consumerKey;
         private string _consumerSecret;
-        private string _accessTokenKey;
-        private string _accessTokenSecret;
         private string _adminUrlPart = "admin";
         private string _callbackUrl = "http://localhost:8888";
         private string _userName;
         private string _password;
         private bool _hasAuthenticatedWithAdminAuthentication;
         private bool _isAuthenticating;
+        private readonly object _lock = new object();
     
         private JsonSerializer _jsonSerializer;
         private RestClient _client;
+        private bool _contentTypeHeaderWithUnderscore = false;
 
         private RestClient Client
         {
             get
             {
                 if (!_isAuthenticating) return _client;
-                lock (_client)
+                lock (_lock)
                 {
                     // lock access to the client when authenticating
                 }
@@ -52,11 +52,12 @@ namespace Magento.RestApi
         /// <summary>
         /// allow read access to token key for later calls
         /// </summary>
-        public String AccessTokenKey => this._accessTokenKey;
+        public string AccessTokenKey { get; private set; }
+
         /// <summary>
         /// allow read access to token secret for later calls
         /// </summary>
-        public String AccessTokenSecret => this._accessTokenSecret;
+        public string AccessTokenSecret { get; private set; }
 
         /// <summary>
         /// Initializes the client, setting url, consumerkey and consumersecret and adding default request headers and handlers
@@ -86,9 +87,8 @@ namespace Magento.RestApi
             _jsonSerializer = new JsonSerializer();
             _client = new RestClient(_url);
 
-            _client.AddDefaultHeader("Content-Type", "application/json");
-            // Seriously Magento? http://www.magentocommerce.com/boards/viewthread/295646/
-            _client.AddDefaultHeader("Content_Type", "application/json");
+            // Certain Magento installations use the underscore instead of the hyphen for content type
+            _client.AddDefaultHeader(_contentTypeHeaderWithUnderscore ? "Content_Type" : "Content-Type", "application/json");
 
             _client.ClearHandlers(); // http://stackoverflow.com/questions/22229393/why-is-restsharp-addheaderaccept-application-json-to-a-list-of-item
             _client.AddHandler("application/json", _jsonSerializer);
@@ -104,15 +104,15 @@ namespace Magento.RestApi
         /// <returns>this, for fluent configuration</returns>
         public IMagentoApi SetAccessToken(string accessTokenKey, string accessTokenSecret)
         {
-            _accessTokenKey = accessTokenKey;
-            _accessTokenSecret = accessTokenSecret;
+            AccessTokenKey = accessTokenKey;
+            AccessTokenSecret = accessTokenSecret;
 
             InitializeRestClient();
             _client.Authenticator = OAuth1Authenticator.ForProtectedResource(
                 _consumerKey,
                 _consumerSecret,
-                _accessTokenKey,
-                _accessTokenSecret);
+                AccessTokenKey,
+                AccessTokenSecret);
 
             return this;
         }
@@ -141,6 +141,17 @@ namespace Magento.RestApi
         }
 
         /// <summary>
+        /// Some Magento installations are misconfigured in that they expect the content type header to have an underscore instead of a hyphen.
+        /// If that is the case, call this method before Initialize
+        /// </summary>
+        /// <returns></returns>
+        public IMagentoApi ContentTypeHeaderWithUnderscore()
+        {
+            _contentTypeHeaderWithUnderscore = true;
+            return this;
+        }
+
+        /// <summary>
         /// This gets the access token and secret without opening a browser to let the user log in.
         /// This is primarely used for backend applications such as windows services where you can't let the user show a browser window.
         /// </summary>
@@ -149,7 +160,7 @@ namespace Magento.RestApi
         /// <returns>this, for fluent configuration</returns>
         public IMagentoApi AuthenticateAdmin(string userName, string password)
         {
-            lock (_client)
+            lock (_lock)
             {
                 try
                 {
@@ -206,16 +217,16 @@ namespace Magento.RestApi
 
                     queryStringValues = HttpUtility.ParseQueryString(response.Content);
 
-                    _accessTokenKey = queryStringValues["oauth_token"];
-                    _accessTokenSecret = queryStringValues["oauth_token_secret"];
+                    AccessTokenKey = queryStringValues["oauth_token"];
+                    AccessTokenSecret = queryStringValues["oauth_token_secret"];
                     _hasAuthenticatedWithAdminAuthentication = true;
 
                     InitializeRestClient();
                     _client.Authenticator = OAuth1Authenticator.ForProtectedResource(
                         _consumerKey,
                         _consumerSecret,
-                        _accessTokenKey,
-                        _accessTokenSecret);
+                        AccessTokenKey,
+                        AccessTokenSecret);
 
                     return this;
                 }

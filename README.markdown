@@ -4,7 +4,7 @@
 
 The client is specifically targeted to be used in background processes. Magento REST API uses 3-legged OAuth 1.0a protocol to authenticate the application to access the Magento service. Because it is not very useful to pop up browser windows from a background process (like a windows service) for the user to enter username and password, the client has an authentication method that simulates the login process without opening browser windows.
 
-[Available from nuget: Magento.RestApi](https://www.nuget.org/packages/Magento.RestApi/1.0.3) (updated to 1.0.3 on 03/10/2015)
+[Available from nuget: Magento.RestApi](https://www.nuget.org/packages/Magento.RestApi/1.0.4) (updated to 1.0.4 on 22/08/2016)
 
 ### Usage
 #### Authentication
@@ -41,6 +41,15 @@ The client can be used with a user that isn't an admin, but the oauth credential
 var client = new MagentoApi()
     .Initialize("http://www.yourmagentourl.com", "ConsumerKey", "ConsumerSecret")
     .SetAccessToken("AccessTokenKey", "accessTokenSecret");
+```
+
+Some Magento configurations require to send the content-type header with an underscore. If that is the case:
+
+```csharp
+var client = new MagentoApi()
+    .ContentTypeHeaderWithUnderscore()
+    .Initialize("http://www.yourmagentourl.com", "ConsumerKey", "ConsumerSecret")
+    .AuthenticateAdmin("UserName", "Password");
 ```
 
 *If you have trouble authenticating, you can read the wiki page [authentication steps](https://github.com/nickvane/Magento-RestApi/wiki/Authentication-steps) for more information about the different steps in the authentication process. You can then compare the steps from the page with your own requests you see in [Fiddler](http://fiddler2.com).*

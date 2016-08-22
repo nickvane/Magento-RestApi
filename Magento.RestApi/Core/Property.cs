@@ -27,6 +27,26 @@ namespace Magento.RestApi.Core
             {
                 hasChanged = (Value as IChangeTracking).HasChanged();
             }
+            else if (typeof(T).IsAssignableFrom(typeof(Dictionary<string, string>)))
+            {
+                if (_initialValue == null)
+                {
+                    hasChanged = _value != null;
+                }
+                else
+                {
+                    if (_value == null) return hasChanged;
+                    var initialValue = _initialValue as IDictionary<string, string>;
+                    var value = _value as IDictionary<string, string>;
+                    hasChanged = initialValue.Count != value.Count;
+                    if (hasChanged) return hasChanged;
+                    foreach (var pair in initialValue)
+                    {
+                        hasChanged = !value.ContainsKey(pair.Key) || pair.Value != value[pair.Key];
+                        if (hasChanged) break;
+                    }
+                }
+            }
             else if (typeof(T).GetInterfaces().Any(x =>
                                                    x.IsGenericType &&
                                                    x.GetGenericTypeDefinition() == typeof(IList<>)) &&
