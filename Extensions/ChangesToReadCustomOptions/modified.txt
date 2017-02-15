@@ -1,0 +1,22 @@
+Modified files
+
+magento\htdocs\app\code\core\Mage\Sales\etc\api2.xml
+
+line 178
+<attributes translate="item_id name parent_item_id sku price price_incl_tax qty_ordered qty_invoiced qty_shipped qty_canceled qty_refunded row_total row_total_incl_tax base_price original_price base_original_price base_price_incl_tax tax_percent tax_amount custom_options base_tax_amount discount_amount base_discount_amount base_row_total base_row_total_incl_tax" module="api2">
+
+
+line 198
+<custom_options>Custom Options</custom_options>
+
+magento\htdocs\app\code\core\Mage\Sales\Model\Api2\Order.php
+
+lines 226-232
+
+	$options = $item->getProductOptions();
+	$customOptions = $options['options'];
+	if(!empty($customOptions))
+	{
+		Mage::log('oi');
+		$item['custom_options'] = $customOptions;
+	}
