@@ -2,6 +2,7 @@
 using Magento.RestApi.Json;
 using Newtonsoft.Json;
 using Magento.RestApi.Core;
+using System.Collections.Generic;
 
 namespace Magento.RestApi.Models
 {
@@ -227,6 +228,15 @@ namespace Magento.RestApi.Models
         {
             get { return GetValue(x => x.qty_shipped); }
             set { SetValue(x => x.qty_shipped, value); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<CustomOption> custom_options
+        {
+            get { return GetValue(x => x.custom_options); }
+            set { SetValue(x => x.custom_options, value); }
         }
     }
 }
