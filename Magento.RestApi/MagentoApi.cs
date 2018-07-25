@@ -655,6 +655,7 @@ namespace Magento.RestApi
         {
             var request = CreateRequest("/api/rest/products");
             request.AddParameter("category_id", categoryId);
+	    AddFilterToRequest(filter, request);
 
             var response = await Execute<Dictionary<int, Product>>(request);
             if (!response.HasErrors)
@@ -901,6 +902,7 @@ namespace Magento.RestApi
         {
             var request = CreateRequest("/api/rest/products/{productId}/categories");
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
+	    AddFilterToRequest(filter, request);
 
             var response = await Execute(request);
             var errors = GetErrorsFromResponse(response);
@@ -977,6 +979,7 @@ namespace Magento.RestApi
         {
             var request = CreateRequest("/api/rest/products/{productId}/images");
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
+	    AddFilterToRequest(filter, request);
             
             var response = await Execute<List<ImageInfo>>(request);
             return !response.HasErrors 
@@ -997,6 +1000,7 @@ namespace Magento.RestApi
             var request = CreateRequest("/api/rest/products/{productId}/images/store/{storeId}");
             request.AddParameter("productId", productId, ParameterType.UrlSegment);
             request.AddParameter("storeId", storeId, ParameterType.UrlSegment);
+	    AddFilterToRequest(filter, request);
 
             var response = await Execute<List<ImageInfo>>(request);
             return !response.HasErrors
