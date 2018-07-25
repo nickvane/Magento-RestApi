@@ -130,7 +130,22 @@ namespace Magento.RestApi.Json
                     {
                         if (product.Attributes.ContainsKey(name)) product.Attributes.Remove(name);
                         string value = null;
-                        if (jProperty.Value != null) value = jProperty.Value.Value<string>();
+                        if (jProperty.Value != null)
+                        {
+                            if (jProperty.Value is JArray)
+                            {
+                                var arr = jProperty.Value.Value<JArray>();
+                                if (arr.Any() && arr.Count == 1)
+                                    value = arr[0].Value<string>();
+                                else
+                                    value = jProperty.Value.Value<JArray>().ToString();
+                            }
+                            else
+                            {
+                                value = jProperty.Value.Value<string>();
+                            }
+                        }
+                        
                         product.Attributes.Add(name, value);
                     }
                 }
